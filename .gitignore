@@ -1,0 +1,42 @@
+# Compiled source files
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+DerivedDataCache/
+
+# Build artifacts
+Build/*/*.app
+Build/*/*.exe
+Build/*/*.dll
+Build/*/*.so
+Build/*/*.dylib
+
+# Ignore project-specific Binaries/Intermediate/Saved folders
+*/Binaries/*
+*/Intermediate/*
+*/Saved/*
+*/DerivedDataCache/*
+
+# Ignore VS and Rider files
+.vscode/
+.vs/
+.idea/
+
+# Ignore user-specific settings
+*.suo
+*.user
+*.userprefs
+*.log
+*.tlog
+
+# Ignore backup files
+*.tmp
+*.temp
+
+# Ignore generated config backups
+Config/DefaultEditorPerProjectUserSettings.ini
+Config/DefaultEditorUserSettings.ini
+
+# Optional: ignore Derived Data Cache outside project
+**/DerivedDataCache/**
