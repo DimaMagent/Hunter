@@ -3,6 +3,9 @@ Binaries/
 DerivedDataCache/
 Intermediate/
 Saved/
+.build/
+Script/
+Shaders/
 DerivedDataCache/
 
 # Build artifacts
@@ -21,11 +24,15 @@ Build/*/*.dylib
 # Ignore VS and Rider files
 .vscode/
 .vs/
+*.sln
 .idea/
 
 # Ignore user-specific settings
 *.suo
 *.user
+*.opensdf
+*.sdf
+*.cache
 *.userprefs
 *.log
 *.tlog
@@ -40,3 +47,16 @@ Config/DefaultEditorUserSettings.ini
 
 # Optional: ignore Derived Data Cache outside project
 **/DerivedDataCache/**
+
+# Other
+*.tmp
+*.obj
+*.pdb
+*.exe
+*.db
+*.dll
+*.iml
+
+# Generated project files
+*.VC.db
+*.VC.opendb
