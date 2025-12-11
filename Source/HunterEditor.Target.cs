@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class HunterEditorTarget : TargetRules
 {
-	public HunterEditorTarget(TargetInfo Target) : base(Target)
+	public HunterEditorTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V6;
