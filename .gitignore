@@ -24,6 +24,7 @@ Build/*/*.dylib
 # Ignore VS and Rider files
 .vscode/
 .vs/
+*.vsconfig
 *.sln
 .idea/
 
