@@ -7,7 +7,8 @@
 #include "HBaseCharacter.generated.h"
 
 struct FInputActionInstance;
-
+class USpringArmComponent;
+class UCameraComponent;
 UCLASS()
 class HUNTER_API AHBaseCharacter : public ACharacter
 {
@@ -15,9 +16,18 @@ class HUNTER_API AHBaseCharacter : public ACharacter
 
 public:
 	AHBaseCharacter(const FObjectInitializer& ObjectInitializer);
+
 	void Move(const FInputActionInstance& Instance);
+	void LookAround(const FInputActionInstance& Instance);
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	TObjectPtr<UCameraComponent> CameraComponent;
+
 	virtual void BeginPlay() override;
 
 

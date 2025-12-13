@@ -13,6 +13,7 @@ void AHPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent)) {
 		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::Move);
+		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::LookAround);
 	}
 }
 
@@ -25,6 +26,8 @@ void AHPlayerController::BeginPlay()
 			Subsystem->AddMappingContext(GameplayMappingContext, 0);
 		}
 	}
+	PlayerCameraManager->ViewPitchMin = 315.0f;
+	PlayerCameraManager->ViewPitchMax = 30.0f;
 }
 
 void AHPlayerController::Move(const FInputActionInstance& Instance)
@@ -33,4 +36,13 @@ void AHPlayerController::Move(const FInputActionInstance& Instance)
 		CachedCharacter->Move(Instance);
 	}
 }
+
+void AHPlayerController::LookAround(const FInputActionInstance& Instance)
+{
+	if (CachedCharacter) {
+		CachedCharacter->LookAround(Instance);
+	}
+}
+
+
 

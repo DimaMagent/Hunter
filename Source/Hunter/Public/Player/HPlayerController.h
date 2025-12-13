@@ -17,11 +17,14 @@ UCLASS()
 class HUNTER_API AHPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
 protected:
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
 
 	void Move(const FInputActionInstance& Instance);
+
+	void LookAround(const FInputActionInstance& Instance);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> GameplayMappingContext;
@@ -34,4 +37,5 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedCharacter;
+
 };
