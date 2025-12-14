@@ -26,6 +26,8 @@ protected:
 
 	void LookAround(const FInputActionInstance& Instance);
 
+	void Attack(const FInputActionInstance& Instance);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> GameplayMappingContext;
 
@@ -34,6 +36,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> AttackAction;
+
 private:
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedCharacter;

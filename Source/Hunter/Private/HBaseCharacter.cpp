@@ -35,9 +35,42 @@ void AHBaseCharacter::LookAround(const FInputActionInstance& Instance) {
 	AddControllerYawInput(LookAxisValue.X);
 }
 
+void AHBaseCharacter::Attack(const FInputActionInstance& Instance) {
+	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
+	EnsureFightMode();
+	TryAttack();
+}
+
+void AHBaseCharacter::TryAttack()
+{
+	/*Здесь должна быть логика атаки*/
+	UE_LOG(CharacterLog, Display, TEXT("Attack"));
+}
+
+void AHBaseCharacter::ChangeCharacterMode(ECharacterMode NewMode)
+{
+	if (CharacterMode == NewMode) { return; }
+	CharacterMode = NewMode;
+	UE_LOG(CharacterLog, Display, TEXT("Change character mode %i"), CharacterMode);
+	OnCharacterModeChanged.Broadcast(CharacterMode);
+}
+
+void AHBaseCharacter::TryEnterFightMode()
+{
+	/*Здесь должны быть проверки на возможность перейти в fightmode*/
+	ChangeCharacterMode(ECharacterMode::FightMode);
+}
+
 void AHBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	CharacterMode = ECharacterMode::AdventureMode;
+}
+
+void AHBaseCharacter::EnsureFightMode()
+{
+	if (CharacterMode == ECharacterMode::FightMode) { return; }
+	TryEnterFightMode();
 	
 }
 

@@ -14,6 +14,7 @@ void AHPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent)) {
 		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::Move);
 		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::LookAround);
+		EnhancedInput->BindAction(AttackAction, ETriggerEvent::Started, this, &AHPlayerController::Attack);
 	}
 }
 
@@ -41,6 +42,13 @@ void AHPlayerController::LookAround(const FInputActionInstance& Instance)
 {
 	if (CachedCharacter) {
 		CachedCharacter->LookAround(Instance);
+	}
+}
+
+void AHPlayerController::Attack(const FInputActionInstance& Instance)
+{
+	if (CachedCharacter) {
+		CachedCharacter->Attack(Instance);
 	}
 }
 
