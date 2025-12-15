@@ -13,5 +13,11 @@ UCLASS()
 class HUNTER_API UHCharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
-	
+public:
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	float GetLocalMoveRight() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	float GetLocalMoveForward() const;
+
 };

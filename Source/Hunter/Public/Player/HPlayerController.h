@@ -21,6 +21,7 @@ class HUNTER_API AHPlayerController : public APlayerController
 protected:
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* PawnToPossess) override;
 
 	void Move(const FInputActionInstance& Instance);
 
@@ -40,8 +41,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> AttackAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
+	float ViewPitchMin = 315.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
+	float ViewPitchMax = 30.0f;
+
 private:
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedCharacter;
 
+	bool ValidateInputActions() const;
+	bool ValidateMappingContexts() const;
+
+	void InitializeMappingContexts() const;
 };

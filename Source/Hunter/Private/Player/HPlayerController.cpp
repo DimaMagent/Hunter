@@ -22,13 +22,13 @@ void AHPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	CachedCharacter = Cast<AHBaseCharacter>(GetCharacter());
-	if (ULocalPlayer* LocalPlayer = GetLocalPlayer()) {
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()) {
-			Subsystem->AddMappingContext(GameplayMappingContext, 0);
-		}
-	}
-	PlayerCameraManager->ViewPitchMin = 315.0f;
-	PlayerCameraManager->ViewPitchMax = 30.0f;
+	PlayerCameraManager->ViewPitchMin = ViewPitchMin;
+	PlayerCameraManager->ViewPitchMax = ViewPitchMax;
+}
+
+void AHPlayerController::OnPossess(APawn* PawnToPossess) {
+	Super::OnPossess(PawnToPossess);
+	InitializeMappingContexts();
 }
 
 void AHPlayerController::Move(const FInputActionInstance& Instance)
@@ -50,6 +50,33 @@ void AHPlayerController::Attack(const FInputActionInstance& Instance)
 	if (CachedCharacter) {
 		CachedCharacter->Attack(Instance);
 	}
+}
+
+bool AHPlayerController::ValidateInputActions() const
+{
+	bool bIsValidAdventureModeActions = ensureMsgf(MoveAction, TEXT("MoveAction is not set on %s"), *GetName()) &&
+		ensureMsgf(LookAction, TEXT("LookAction is not set on %s"), *GetName()) &&
+		ensureMsgf(AttackAction, TEXT("AttackAction is not set on %s"), *GetName());
+	return bIsValidAdventureModeActions;
+}
+
+bool AHPlayerController::ValidateMappingContexts() const
+{
+	return 	ensureMsgf(GameplayMappingContext, TEXT("GameplayMappingContext is not set on %s"), *GetName());
+}
+
+void AHPlayerController::InitializeMappingContexts() const
+{
+	ValidateInputActions();
+	if (!ValidateMappingContexts()) { return; }
+
+	ULocalPlayer* LocalPlayer = GetLocalPlayer();
+	if (!LocalPlayer) { return; }
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	if (!Subsystem) { return; }
+
+	Subsystem->AddMappingContext(GameplayMappingContext, 0);
 }
 
 
