@@ -6,10 +6,30 @@
 #include "GameFramework/PlayerController.h"
 #include "HPlayerController.generated.h"
 
+class UInputAction;
 class AHBaseCharacter;
 class UInputMappingContext;
-class UInputAction;
 struct FInputActionInstance;
+
+USTRUCT(BlueprintType)
+struct FAdventureModeAction
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> AttackAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> RunAction;
+};
+
+
 /**
  * 
  */
@@ -29,17 +49,15 @@ protected:
 
 	void Attack(const FInputActionInstance& Instance);
 
+	void RunStart(const FInputActionInstance& Instance);
+
+	void RunEnd(const FInputActionInstance& Instance);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> GameplayMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> MoveAction;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> LookAction;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> AttackAction;
+	FAdventureModeAction AdventureModeActions;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMin = 315.0f;

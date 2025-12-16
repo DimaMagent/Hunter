@@ -13,7 +13,6 @@ float UHCharacterMovementComponent::GetLocalMoveRight() const
 
 	const float DotProduct = FVector::DotProduct(VelocityDir, RightVector);
 
-	UE_LOG(LogTemp, Warning, TEXT("Move Right Value: %f"), DotProduct / GetMaxSpeed());
 	return DotProduct / GetMaxSpeed();
 }
 
@@ -27,9 +26,45 @@ float UHCharacterMovementComponent::GetLocalMoveForward() const
 
 	const float DotProduct = FVector::DotProduct(VelocityDir, ForwardVector);
 
-	UE_LOG(LogTemp, Warning, TEXT("Move Forward Value: %f"), DotProduct / GetMaxSpeed());
 	return DotProduct / GetMaxSpeed();
 
+}
+
+void UHCharacterMovementComponent::RunStart()
+{
+	if (CurrentLocomotionMode == ELocomotionMode::RunMode) {
+		if (!CanRun()) { RunEnd(); }
+		return;
+	}
+
+	if (!CanRun()) { return; }
+
+	CurrentLocomotionMode = ELocomotionMode::RunMode;
+	MaxWalkSpeed = MaxRunModeSpeed;
+}
+
+void UHCharacterMovementComponent::RunEnd()
+{
+	CurrentLocomotionMode = ELocomotionMode::WalkMode;
+	MaxWalkSpeed = MaxWalkModeSpeed;
+}
+
+void UHCharacterMovementComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	MaxWalkSpeed = MaxWalkModeSpeed;
+}
+
+bool UHCharacterMovementComponent::CanRun() const
+{
+	const float MoveForward = GetLocalMoveForward();
+	const float MoveRight = GetLocalMoveRight();
+
+	bool bIsMovingForward = MoveForward >= 0.0f;
+	bool bIsNotMovingSideways = FMath::Abs(GetLocalMoveRight()) < RunSideLimit;
+
+	/*Позже необходимо добавлять условия*/
+	return bIsMovingForward && bIsNotMovingSideways;
 }
 
 

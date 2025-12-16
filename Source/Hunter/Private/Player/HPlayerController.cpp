@@ -12,9 +12,11 @@ void AHPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent)) {
-		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::Move);
-		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::LookAround);
-		EnhancedInput->BindAction(AttackAction, ETriggerEvent::Started, this, &AHPlayerController::Attack);
+		EnhancedInput->BindAction(AdventureModeActions.MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::Move);
+		EnhancedInput->BindAction(AdventureModeActions.LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::LookAround);
+		EnhancedInput->BindAction(AdventureModeActions.AttackAction, ETriggerEvent::Started, this, &AHPlayerController::Attack);
+		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Triggered, this, &AHPlayerController::RunStart);
+		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Completed, this, &AHPlayerController::RunEnd);
 	}
 }
 
@@ -33,30 +35,51 @@ void AHPlayerController::OnPossess(APawn* PawnToPossess) {
 
 void AHPlayerController::Move(const FInputActionInstance& Instance)
 {
-	if (CachedCharacter) {
-		CachedCharacter->Move(Instance);
-	}
+	if (!CachedCharacter) { return; }
+
+	FVector2D MoveAroundValue = Instance.GetValue().Get<FVector2D>();
+	CachedCharacter->Move(MoveAroundValue);
 }
 
 void AHPlayerController::LookAround(const FInputActionInstance& Instance)
 {
-	if (CachedCharacter) {
-		CachedCharacter->LookAround(Instance);
-	}
+	if (!CachedCharacter) { return; }
+
+	FVector2D LookAxisValue = Instance.GetValue().Get<FVector2D>();
+	CachedCharacter->LookAround(LookAxisValue);
 }
 
 void AHPlayerController::Attack(const FInputActionInstance& Instance)
 {
-	if (CachedCharacter) {
-		CachedCharacter->Attack(Instance);
-	}
+	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
+	if (!CachedCharacter && !bIsTriggered) { return; }
+
+	CachedCharacter->Attack();
+}
+
+void AHPlayerController::RunStart(const FInputActionInstance& Instance)
+{
+
+	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Triggered;
+	if (!CachedCharacter && !bIsTriggered) { return; }
+
+	CachedCharacter->RunStart();
+}
+
+void AHPlayerController::RunEnd(const FInputActionInstance& Instance)
+{
+	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Completed;
+	if (!CachedCharacter && !bIsTriggered) { return; }
+
+	CachedCharacter->RunEnd();
 }
 
 bool AHPlayerController::ValidateInputActions() const
 {
-	bool bIsValidAdventureModeActions = ensureMsgf(MoveAction, TEXT("MoveAction is not set on %s"), *GetName()) &&
-		ensureMsgf(LookAction, TEXT("LookAction is not set on %s"), *GetName()) &&
-		ensureMsgf(AttackAction, TEXT("AttackAction is not set on %s"), *GetName());
+	bool bIsValidAdventureModeActions = ensureMsgf(AdventureModeActions.MoveAction, TEXT("MoveAction is not set on %s"), *GetName()) &&
+		ensureMsgf(AdventureModeActions.LookAction, TEXT("LookAction is not set on %s"), *GetName()) &&
+		ensureMsgf(AdventureModeActions.AttackAction, TEXT("AttackAction is not set on %s"), *GetName()) &&
+		ensureMsgf(AdventureModeActions.RunAction, TEXT("RunAction is not set on %s"), *GetName());;
 	return bIsValidAdventureModeActions;
 }
 

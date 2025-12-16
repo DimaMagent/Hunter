@@ -23,22 +23,29 @@ AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 	
 }
 
-void AHBaseCharacter::Move(const FInputActionInstance& Instance) {
-	FVector2D MoveAroundValue = Instance.GetValue().Get<FVector2D>();
+void AHBaseCharacter::Move(const FVector2D MoveAroundValue) {
+	
 	AddMovementInput(GetActorForwardVector(), MoveAroundValue.X);
 	AddMovementInput(GetActorRightVector(), MoveAroundValue.Y);
 }
 
-void AHBaseCharacter::LookAround(const FInputActionInstance& Instance) {
-	FVector2D LookAxisValue = Instance.GetValue().Get<FVector2D>();
+void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
+
 	AddControllerPitchInput(LookAxisValue.Y);
 	AddControllerYawInput(LookAxisValue.X);
 }
 
-void AHBaseCharacter::Attack(const FInputActionInstance& Instance) {
-	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
+void AHBaseCharacter::Attack() {
 	EnsureFightMode();
 	TryAttack();
+}
+
+void AHBaseCharacter::RunStart() {
+	CachedMovementComponent->RunStart();
+}
+
+void AHBaseCharacter::RunEnd() {
+	CachedMovementComponent->RunEnd();
 }
 
 void AHBaseCharacter::TryAttack()
@@ -64,6 +71,7 @@ void AHBaseCharacter::TryEnterFightMode()
 void AHBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	CachedMovementComponent = Cast<UHCharacterMovementComponent>(GetCharacterMovement());
 	CharacterMode = ECharacterMode::AdventureMode;
 }
 

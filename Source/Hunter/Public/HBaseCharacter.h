@@ -10,6 +10,7 @@
 struct FInputActionInstance;
 class USpringArmComponent;
 class UCameraComponent;
+class UHCharacterMovementComponent;
 
 UCLASS()
 class HUNTER_API AHBaseCharacter : public ACharacter
@@ -22,9 +23,11 @@ public:
 
 	AHBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
-	void Move(const FInputActionInstance& Instance);
-	void LookAround(const FInputActionInstance& Instance);
-	void Attack(const FInputActionInstance& Instance);
+	void Move(const FVector2D MoveAroundValue);
+	void LookAround(const FVector2D LookAxisValue);
+	void Attack();
+	void RunStart();
+	void RunEnd();
 
 protected:
 
@@ -44,6 +47,10 @@ protected:
 
 
 private:
+
+	UPROPERTY()
+	TObjectPtr<UHCharacterMovementComponent> CachedMovementComponent;
+
 	void EnsureFightMode();
 	void ChangeCharacterMode(ECharacterMode NewMode);
 	void TryEnterFightMode();
