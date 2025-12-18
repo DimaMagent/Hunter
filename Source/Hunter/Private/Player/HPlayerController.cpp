@@ -85,7 +85,7 @@ bool AHPlayerController::ValidateInputActions() const
 
 bool AHPlayerController::ValidateMappingContexts() const
 {
-	return 	ensureMsgf(GameplayMappingContext, TEXT("GameplayMappingContext is not set on %s"), *GetName());
+	return 	ensureMsgf(AdventureModeMappingContext, TEXT("GameplayMappingContext is not set on %s"), *GetName());
 }
 
 void AHPlayerController::InitializeMappingContexts() const
@@ -99,7 +99,7 @@ void AHPlayerController::InitializeMappingContexts() const
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	if (!Subsystem) { return; }
 
-	Subsystem->AddMappingContext(GameplayMappingContext, 0);
+	Subsystem->AddMappingContext(AdventureModeMappingContext, 0);
 }
 
 

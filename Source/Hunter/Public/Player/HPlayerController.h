@@ -54,7 +54,7 @@ protected:
 	void RunEnd(const FInputActionInstance& Instance);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputMappingContext> GameplayMappingContext;
+	TObjectPtr<UInputMappingContext> AdventureModeMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	FAdventureModeAction AdventureModeActions;

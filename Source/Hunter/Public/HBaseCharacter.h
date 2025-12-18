@@ -29,6 +29,8 @@ public:
 	void RunStart();
 	void RunEnd();
 
+	ECharacterMode GetCurrentCharacterMode() const { return CharacterMode; };
+
 protected:
 
 	virtual void BeginPlay() override;
