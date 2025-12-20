@@ -31,8 +31,11 @@ void AHBaseCharacter::Move(const FVector2D MoveAroundValue) {
 
 void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
 
-	AddControllerPitchInput(LookAxisValue.Y);
+	UpdateLookAroundMode();
+
 	AddControllerYawInput(LookAxisValue.X);
+	AddControllerPitchInput(LookAxisValue.Y);
+
 }
 
 void AHBaseCharacter::Attack() {
@@ -66,6 +69,12 @@ void AHBaseCharacter::TryEnterFightMode()
 {
 	/*«десь должны быть проверки на возможность перейти в fightmode*/
 	ChangeCharacterMode(ECharacterMode::FightMode);
+}
+
+void AHBaseCharacter::UpdateLookAroundMode()
+{
+	/*≈сли потребуетс€ можно позже добавить проверку на возвожность UpdateLookAroundMode*/
+	bUseControllerRotationYaw = !GetLastMovementInputVector().IsNearlyZero();
 }
 
 void AHBaseCharacter::BeginPlay()

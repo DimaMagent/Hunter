@@ -56,4 +56,5 @@ private:
 	void EnsureFightMode();
 	void ChangeCharacterMode(ECharacterMode NewMode);
 	void TryEnterFightMode();
+	void UpdateLookAroundMode();
 };
