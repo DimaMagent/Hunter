@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/HHealthComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(CharacterLog, All, All)
 
@@ -18,6 +19,8 @@ AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	HealthComponent = CreateDefaultSubobject<UHHealthComponent>("HealthComponent");
 
 	PrimaryActorTick.bCanEverTick = false;
 	
@@ -80,6 +83,7 @@ void AHBaseCharacter::UpdateLookAroundMode()
 void AHBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	ensure(HealthComponent);
 	CachedMovementComponent = Cast<UHCharacterMovementComponent>(GetCharacterMovement());
 	CharacterMode = ECharacterMode::AdventureMode;
 }

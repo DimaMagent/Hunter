@@ -11,6 +11,7 @@ struct FInputActionInstance;
 class USpringArmComponent;
 class UCameraComponent;
 class UHCharacterMovementComponent;
+class UHHealthComponent;
 
 UCLASS()
 class HUNTER_API AHBaseCharacter : public ACharacter
@@ -42,6 +43,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	TObjectPtr<UHHealthComponent> HealthComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mode")
 	ECharacterMode CharacterMode;
