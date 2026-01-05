@@ -43,15 +43,15 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* PawnToPossess) override;
 
-	void Move(const FInputActionInstance& Instance);
+	void OnMove(const FInputActionInstance& Instance);
 
-	void LookAround(const FInputActionInstance& Instance);
+	void OnLookAround(const FInputActionInstance& Instance);
 
-	void Attack(const FInputActionInstance& Instance);
+	void OnAttack(const FInputActionInstance& Instance);
 
-	void RunStart(const FInputActionInstance& Instance);
+	void OnRunStart(const FInputActionInstance& Instance);
 
-	void RunEnd(const FInputActionInstance& Instance);
+	void OnRunEnd(const FInputActionInstance& Instance);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> AdventureModeMappingContext;

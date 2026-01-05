@@ -7,6 +7,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/HHealthComponent.h"
+#include "Components/HCombatComponent.h"
+#include "Components/HWeaponComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(CharacterLog, All, All)
 
@@ -21,6 +23,10 @@ AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	HealthComponent = CreateDefaultSubobject<UHHealthComponent>("HealthComponent");
+
+	WeaponComponent = CreateDefaultSubobject<UHWeaponComponent>("WeaponComponent");
+
+	CombatComponent = CreateDefaultSubobject<UHCombatComponent>("CombatComponent");
 
 	PrimaryActorTick.bCanEverTick = false;
 	
@@ -43,7 +49,7 @@ void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
 
 void AHBaseCharacter::Attack() {
 	EnsureFightMode();
-	TryAttack();
+	CombatComponent->TryAttack();
 }
 
 void AHBaseCharacter::RunStart() {
@@ -54,10 +60,21 @@ void AHBaseCharacter::RunEnd() {
 	CachedMovementComponent->RunEnd();
 }
 
-void AHBaseCharacter::TryAttack()
+void AHBaseCharacter::PlayAttackAnim(EMoveSet CurrentMoveSet) const
 {
-	/*Здесь должна быть логика атаки*/
-	UE_LOG(CharacterLog, Display, TEXT("Attack"));
+	if (!AttackAnims.Contains(CurrentMoveSet)) { return; }
+	UAnimMontage* AttackAnimMontage = AttackAnims[CurrentMoveSet];
+
+	if (!AttackAnimMontage) { return; }
+
+	const USkeletalMeshComponent* SkeletalMesh = GetMesh();
+	if (!SkeletalMesh) { return; }
+
+	UAnimInstance* AnimInstance = SkeletalMesh->GetAnimInstance();
+	if (!AnimInstance) { return; }
+
+	AnimInstance->Montage_Play(AttackAnimMontage);
+	
 }
 
 void AHBaseCharacter::ChangeCharacterMode(ECharacterMode NewMode)
@@ -76,7 +93,7 @@ void AHBaseCharacter::TryEnterFightMode()
 
 void AHBaseCharacter::UpdateLookAroundMode()
 {
-	/*Если потребуется можно позже добавить проверку на возвожность UpdateLookAroundMode*/
+	/*Если потребуется можно позже добавить проверку на возможность UpdateLookAroundMode*/
 	bUseControllerRotationYaw = !GetLastMovementInputVector().IsNearlyZero();
 }
 
@@ -84,6 +101,8 @@ void AHBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ensure(HealthComponent);
+	ensure(CombatComponent);
+	ensure(WeaponComponent);
 	CachedMovementComponent = Cast<UHCharacterMovementComponent>(GetCharacterMovement());
 	CharacterMode = ECharacterMode::AdventureMode;
 }

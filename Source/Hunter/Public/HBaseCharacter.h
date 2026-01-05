@@ -5,16 +5,22 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Types/CharacterTypes.h"
+#include "Interfaces/HWeaponOwnerInterface.h"
+#include "Types/WeaponTypes.h"
 #include "HBaseCharacter.generated.h"
 
-struct FInputActionInstance;
 class USpringArmComponent;
 class UCameraComponent;
 class UHCharacterMovementComponent;
 class UHHealthComponent;
-
+class UHCombatComponent;
+class UHWeaponComponent;
+struct FInputActionInstance;
+/*
+явл€етс€ классом дл€ игрока, пока нет других character
+*/
 UCLASS()
-class HUNTER_API AHBaseCharacter : public ACharacter
+class HUNTER_API AHBaseCharacter : public ACharacter, public IHWeaponOwnerInterface
 {
 	GENERATED_BODY()
 
@@ -29,14 +35,15 @@ public:
 	void Attack();
 	void RunStart();
 	void RunEnd();
+	virtual void PlayAttackAnim(EMoveSet CurrentMoveSet) const;
+
+	virtual UHWeaponComponent* GetWeaponComponent_Implementation() const override { return WeaponComponent; };
 
 	ECharacterMode GetCurrentCharacterMode() const { return CharacterMode; };
 
 protected:
 
 	virtual void BeginPlay() override;
-
-	void TryAttack();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
@@ -47,10 +54,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	TObjectPtr<UHHealthComponent> HealthComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	TObjectPtr<UHCombatComponent> CombatComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	TObjectPtr<UHWeaponComponent> WeaponComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mode")
 	ECharacterMode CharacterMode;
 
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
+	TMap<EMoveSet, UAnimMontage*> AttackAnims;
 
 private:
 

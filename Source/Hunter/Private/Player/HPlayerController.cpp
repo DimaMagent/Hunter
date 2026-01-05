@@ -12,11 +12,11 @@ void AHPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent)) {
-		EnhancedInput->BindAction(AdventureModeActions.MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::Move);
-		EnhancedInput->BindAction(AdventureModeActions.LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::LookAround);
-		EnhancedInput->BindAction(AdventureModeActions.AttackAction, ETriggerEvent::Started, this, &AHPlayerController::Attack);
-		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Triggered, this, &AHPlayerController::RunStart);
-		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Completed, this, &AHPlayerController::RunEnd);
+		EnhancedInput->BindAction(AdventureModeActions.MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnMove);
+		EnhancedInput->BindAction(AdventureModeActions.LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnLookAround);
+		EnhancedInput->BindAction(AdventureModeActions.AttackAction, ETriggerEvent::Started, this, &AHPlayerController::OnAttack);
+		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnRunStart);
+		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Completed, this, &AHPlayerController::OnRunEnd);
 	}
 }
 
@@ -33,7 +33,7 @@ void AHPlayerController::OnPossess(APawn* PawnToPossess) {
 	InitializeMappingContexts();
 }
 
-void AHPlayerController::Move(const FInputActionInstance& Instance)
+void AHPlayerController::OnMove(const FInputActionInstance& Instance)
 {
 	if (!CachedCharacter) { return; }
 
@@ -41,7 +41,7 @@ void AHPlayerController::Move(const FInputActionInstance& Instance)
 	CachedCharacter->Move(MoveAroundValue);
 }
 
-void AHPlayerController::LookAround(const FInputActionInstance& Instance)
+void AHPlayerController::OnLookAround(const FInputActionInstance& Instance)
 {
 	if (!CachedCharacter) { return; }
 
@@ -49,7 +49,7 @@ void AHPlayerController::LookAround(const FInputActionInstance& Instance)
 	CachedCharacter->LookAround(LookAxisValue);
 }
 
-void AHPlayerController::Attack(const FInputActionInstance& Instance)
+void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 {
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
@@ -57,7 +57,7 @@ void AHPlayerController::Attack(const FInputActionInstance& Instance)
 	CachedCharacter->Attack();
 }
 
-void AHPlayerController::RunStart(const FInputActionInstance& Instance)
+void AHPlayerController::OnRunStart(const FInputActionInstance& Instance)
 {
 
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Triggered;
@@ -66,7 +66,7 @@ void AHPlayerController::RunStart(const FInputActionInstance& Instance)
 	CachedCharacter->RunStart();
 }
 
-void AHPlayerController::RunEnd(const FInputActionInstance& Instance)
+void AHPlayerController::OnRunEnd(const FInputActionInstance& Instance)
 {
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Completed;
 	if (!CachedCharacter && !bIsTriggered) { return; }
