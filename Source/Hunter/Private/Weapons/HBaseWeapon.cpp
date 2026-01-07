@@ -6,13 +6,15 @@
 AHBaseWeapon::AHBaseWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponSocket");
+	WeaponMesh->SetupAttachment(GetRootComponent());
+	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 }
 
 void AHBaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 void AHBaseWeapon::Attack() const {
 

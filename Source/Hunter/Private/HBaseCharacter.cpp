@@ -61,20 +61,19 @@ void AHBaseCharacter::RunEnd() {
 }
 
 void AHBaseCharacter::PlayAttackAnim(EMoveSet CurrentMoveSet) const
-{
+{ 
 	if (!AttackAnims.Contains(CurrentMoveSet)) { return; }
 	UAnimMontage* AttackAnimMontage = AttackAnims[CurrentMoveSet];
 
 	if (!AttackAnimMontage) { return; }
 
-	const USkeletalMeshComponent* SkeletalMesh = GetMesh();
+	USkeletalMeshComponent* SkeletalMesh = GetMesh();
 	if (!SkeletalMesh) { return; }
 
 	UAnimInstance* AnimInstance = SkeletalMesh->GetAnimInstance();
 	if (!AnimInstance) { return; }
 
 	AnimInstance->Montage_Play(AttackAnimMontage);
-	
 }
 
 void AHBaseCharacter::ChangeCharacterMode(ECharacterMode NewMode)
@@ -103,6 +102,8 @@ void AHBaseCharacter::BeginPlay()
 	ensure(HealthComponent);
 	ensure(CombatComponent);
 	ensure(WeaponComponent);
+	UE_LOG(LogTemp, Warning, TEXT("Mesh: %s"), *GetMesh()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("AnimInstance: %s"), *GetNameSafe(GetMesh()->GetAnimInstance()));
 	CachedMovementComponent = Cast<UHCharacterMovementComponent>(GetCharacterMovement());
 	CharacterMode = ECharacterMode::AdventureMode;
 }

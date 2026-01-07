@@ -29,4 +29,7 @@ protected:
 	/*Я ещё пока не решил, какая будет архитектура у атак оружием, но они должны как-то влиять на анимации, хотя у меня пока нет анимаций*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
 	FAttackInfo AtatackInfo;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 };

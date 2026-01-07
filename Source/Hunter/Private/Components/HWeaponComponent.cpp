@@ -3,6 +3,7 @@
 
 #include "Components/HWeaponComponent.h"
 #include "Weapons/HBaseWeapon.h"
+#include "HBaseCharacter.h"
 
 UHWeaponComponent::UHWeaponComponent()
 {
@@ -20,6 +21,20 @@ void UHWeaponComponent::Attack() const
 void UHWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	if (DefaultWeaponClass) {
+		const UWorld* World = GetWorld();
+		check(World);
+
+		CurrentWeapon = GetWorld()->SpawnActor<AHBaseWeapon>(DefaultWeaponClass);
+
+		const AHBaseCharacter* Owner = Cast<AHBaseCharacter>(GetOwner());
+		check(Owner);
+
+		const auto OwnerMesh = Owner->GetMesh();
+		check(OwnerMesh);
+
+		CurrentWeapon->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+	}
 	ensure(CurrentWeapon);
 	
 }

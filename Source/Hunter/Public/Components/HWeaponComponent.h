@@ -25,7 +25,9 @@ protected:
 
 	/*Тут надо, чтобы он принимал блюприт версию baseWeapon*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	TObjectPtr<AHBaseWeapon> CurrentWeapon;
+	TSubclassOf<AHBaseWeapon> DefaultWeaponClass;
 
+	UPROPERTY()
+	TObjectPtr<AHBaseWeapon> CurrentWeapon;
 		
 };

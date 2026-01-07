@@ -11,20 +11,15 @@ UHCombatComponent::UHCombatComponent()
 {
 
 	PrimaryComponentTick.bCanEverTick = false;
-	CachedCharacter = Cast<AHBaseCharacter>(GetOwner());
-
 }
 
 void UHCombatComponent::TryAttack() const
 {
 	if (!CanAttack()) { return; }
 
-	const AActor* Owner = GetOwner();
-	if (!Owner) { return; }
+	if (!CachedCharacter->Implements<UHWeaponOwnerInterface>()) { return; }
 
-	if (!Owner->Implements<UHWeaponOwnerInterface>()) { return; }
-
-	const UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(Owner);
+	const UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
 	WeaponComponent->Attack();
 
 	const EMoveSet MoveSet = WeaponComponent->GetMoveSet();
@@ -35,7 +30,7 @@ void UHCombatComponent::TryAttack() const
 void UHCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	CachedCharacter = Cast<AHBaseCharacter>(GetOwner());
 }
 
 

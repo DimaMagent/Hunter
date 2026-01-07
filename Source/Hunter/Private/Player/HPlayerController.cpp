@@ -53,7 +53,6 @@ void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 {
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
-
 	CachedCharacter->Attack();
 }
 
