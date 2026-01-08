@@ -4,7 +4,7 @@
 Проект на ранней стадии разработки.
 
 ## Technologies
-- Unreal Engine 5.3
+- Unreal Engine 5.7
 - C++ (Gameplay systems)
 - Blueprints (Prototyping)
 - Git LFS
