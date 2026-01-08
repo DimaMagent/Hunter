@@ -31,6 +31,7 @@ void UHCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	CachedCharacter = Cast<AHBaseCharacter>(GetOwner());
+	ensure(CachedCharacter);
 }
 
 
@@ -42,7 +43,7 @@ void UHCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 bool UHCombatComponent::CanAttack() const
 {
 	/*Позже нужны условия*/
-	return true;
+	return !CachedCharacter->IsAnyAnimMontageActive();
 }
 
 

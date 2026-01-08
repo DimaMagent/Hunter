@@ -60,21 +60,23 @@ void AHBaseCharacter::RunEnd() {
 	CachedMovementComponent->RunEnd();
 }
 
-void AHBaseCharacter::PlayAttackAnim(EMoveSet CurrentMoveSet) const
+void AHBaseCharacter::PlayAttackAnim(const EMoveSet CurrentMoveSet)
 { 
 	if (!AttackAnims.Contains(CurrentMoveSet)) { return; }
 	UAnimMontage* AttackAnimMontage = AttackAnims[CurrentMoveSet];
 
 	if (!AttackAnimMontage) { return; }
 
-	USkeletalMeshComponent* SkeletalMesh = GetMesh();
-	if (!SkeletalMesh) { return; }
+	if (!CachedAnimInstance) { return; }
 
-	UAnimInstance* AnimInstance = SkeletalMesh->GetAnimInstance();
-	if (!AnimInstance) { return; }
+	CachedAnimInstance->Montage_Play(AttackAnimMontage);
 
-	AnimInstance->Montage_Play(AttackAnimMontage);
+	bIsAnimMontageActive = true;
+
+	UE_LOG(CharacterLog, Display, TEXT("Play attack anim montage"));
 }
+
+
 
 void AHBaseCharacter::ChangeCharacterMode(ECharacterMode NewMode)
 {
@@ -92,19 +94,38 @@ void AHBaseCharacter::TryEnterFightMode()
 
 void AHBaseCharacter::UpdateLookAroundMode()
 {
-	/*Если потребуется можно позже добавить проверку на возможность UpdateLookAroundMode*/
+	/*Если потребуется, можно позже добавить проверку на возможность UpdateLookAroundMode*/
 	bUseControllerRotationYaw = !GetLastMovementInputVector().IsNearlyZero();
 }
+
+void AHBaseCharacter::Caching()
+{
+	CachedMovementComponent = Cast<UHCharacterMovementComponent>(GetCharacterMovement());
+
+	USkeletalMeshComponent* SkeletalMesh = GetMesh();
+	if (SkeletalMesh) {
+		CachedAnimInstance = SkeletalMesh->GetAnimInstance();
+	}
+}
+
+void AHBaseCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	bIsAnimMontageActive = false;
+	UE_LOG(CharacterLog, Display, TEXT("Play attack anim montage end"));
+}
+
 
 void AHBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	Caching();
+
 	ensure(HealthComponent);
 	ensure(CombatComponent);
 	ensure(WeaponComponent);
-	UE_LOG(LogTemp, Warning, TEXT("Mesh: %s"), *GetMesh()->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("AnimInstance: %s"), *GetNameSafe(GetMesh()->GetAnimInstance()));
-	CachedMovementComponent = Cast<UHCharacterMovementComponent>(GetCharacterMovement());
+
+	CachedAnimInstance->OnMontageBlendingOut.AddDynamic(this, &AHBaseCharacter::OnMontageEnded);
+
 	CharacterMode = ECharacterMode::AdventureMode;
 }
 

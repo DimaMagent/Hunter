@@ -8,6 +8,13 @@
 
 DEFINE_LOG_CATEGORY_STATIC(ControllerLog, All, All)
 
+FInputRestrictionToken AHPlayerController::AddRestriction(EInputRestriction Restriction)
+{
+	const int32 TokenId = NextTokenId++;
+	ActiveRestrictions.Add(TokenId, Restriction);
+	return { TokenId };
+}
+
 void AHPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -35,6 +42,8 @@ void AHPlayerController::OnPossess(APawn* PawnToPossess) {
 
 void AHPlayerController::OnMove(const FInputActionInstance& Instance)
 {
+	if (HasInputRestriction(EInputRestriction::BlockMove)) { return; }
+
 	if (!CachedCharacter) { return; }
 
 	FVector2D MoveAroundValue = Instance.GetValue().Get<FVector2D>();
@@ -51,6 +60,8 @@ void AHPlayerController::OnLookAround(const FInputActionInstance& Instance)
 
 void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 {
+	if (HasInputRestriction(EInputRestriction::BlockAttack)) { return; }
+
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
 	CachedCharacter->Attack();
@@ -58,6 +69,7 @@ void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 
 void AHPlayerController::OnRunStart(const FInputActionInstance& Instance)
 {
+	if (HasInputRestriction(EInputRestriction::BlockMove)) { return; }
 
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Triggered;
 	if (!CachedCharacter && !bIsTriggered) { return; }
@@ -87,7 +99,7 @@ bool AHPlayerController::ValidateMappingContexts() const
 	return 	ensureMsgf(AdventureModeMappingContext, TEXT("GameplayMappingContext is not set on %s"), *GetName());
 }
 
-void AHPlayerController::InitializeMappingContexts() const
+void AHPlayerController::InitializeMappingContexts()
 {
 	ValidateInputActions();
 	if (!ValidateMappingContexts()) { return; }
@@ -99,6 +111,18 @@ void AHPlayerController::InitializeMappingContexts() const
 	if (!Subsystem) { return; }
 
 	Subsystem->AddMappingContext(AdventureModeMappingContext, 0);
+}
+
+bool AHPlayerController::HasInputRestriction(EInputRestriction Restriction) const
+{
+	for (const auto& Pair : ActiveRestrictions)
+	{
+		if ((Pair.Value & Restriction) != EInputRestriction::None)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 

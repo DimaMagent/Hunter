@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "UObject/ObjectMacros.h"
 #include "HPlayerController.generated.h"
 
 class UInputAction;
@@ -28,8 +29,17 @@ struct FAdventureModeAction
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> RunAction;
 };
+UENUM()
+enum class EInputRestriction : int32 {
+	None = 0,
+	BlockMove = 1 << 0,
+	BlockAttack = 1 << 1,
+};
+ENUM_CLASS_FLAGS(EInputRestriction);
 
-
+struct FInputRestrictionToken {
+	int32 Id;
+};
 /**
  * 
  */
@@ -37,8 +47,11 @@ UCLASS()
 class HUNTER_API AHPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-
+public:
+	FInputRestrictionToken AddRestriction(EInputRestriction Restriction);
+	void RemoveRestriction(FInputRestrictionToken Token) { ActiveRestrictions.Remove(Token.Id); }
 protected:
+
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* PawnToPossess) override;
@@ -65,12 +78,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMax = 30.0f;
 
+	int32 NextTokenId = 1;
+
+	TMap<int32, EInputRestriction> ActiveRestrictions;
+
 private:
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedCharacter;
 
+
+
 	bool ValidateInputActions() const;
 	bool ValidateMappingContexts() const;
 
-	void InitializeMappingContexts() const;
+	void InitializeMappingContexts();
+
+	bool HasInputRestriction(EInputRestriction Restriction) const;
 };

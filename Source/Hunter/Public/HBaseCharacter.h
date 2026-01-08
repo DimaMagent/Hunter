@@ -35,11 +35,12 @@ public:
 	void Attack();
 	void RunStart();
 	void RunEnd();
-	virtual void PlayAttackAnim(EMoveSet CurrentMoveSet) const;
+	virtual void PlayAttackAnim(const EMoveSet CurrentMoveSet);
+	bool IsAnyAnimMontageActive() { return bIsAnimMontageActive; }
 
 	virtual UHWeaponComponent* GetWeaponComponent_Implementation() const override { return WeaponComponent; };
 
-	ECharacterMode GetCurrentCharacterMode() const { return CharacterMode; };
+	ECharacterMode GetCurrentCharacterMode() const { return CharacterMode; }
 
 protected:
 
@@ -71,8 +72,16 @@ private:
 	UPROPERTY()
 	TObjectPtr<UHCharacterMovementComponent> CachedMovementComponent;
 
+	UPROPERTY()
+	TObjectPtr<UAnimInstance> CachedAnimInstance;
+
+	bool bIsAnimMontageActive = false;
+
 	void EnsureFightMode();
 	void ChangeCharacterMode(ECharacterMode NewMode);
 	void TryEnterFightMode();
 	void UpdateLookAroundMode();
+	void Caching();
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 };
