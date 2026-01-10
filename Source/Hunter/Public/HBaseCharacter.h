@@ -15,7 +15,7 @@ class UHCharacterMovementComponent;
 class UHHealthComponent;
 class UHCombatComponent;
 class UHWeaponComponent;
-struct FInputActionInstance;
+
 /*
 явл€етс€ классом дл€ игрока, пока нет других character
 */
@@ -36,7 +36,7 @@ public:
 	void RunStart();
 	void RunEnd();
 	virtual void PlayAttackAnim(const EMoveSet CurrentMoveSet);
-	bool IsAnyAnimMontageActive() { return bIsAnimMontageActive; }
+	bool IsAnyAnimMontageActive() const { return bIsAnimMontageActive; }
 
 	virtual UHWeaponComponent* GetWeaponComponent_Implementation() const override { return WeaponComponent; };
 
@@ -77,11 +77,16 @@ private:
 
 	bool bIsAnimMontageActive = false;
 
+	EMovementMode PreviousMovementMode;
+
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 	void EnsureFightMode();
 	void ChangeCharacterMode(ECharacterMode NewMode);
 	void TryEnterFightMode();
 	void UpdateLookAroundMode();
 	void Caching();
-	UFUNCTION()
-	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+
 };

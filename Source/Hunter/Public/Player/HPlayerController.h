@@ -37,9 +37,6 @@ enum class EInputRestriction : int32 {
 };
 ENUM_CLASS_FLAGS(EInputRestriction);
 
-struct FInputRestrictionToken {
-	int32 Id;
-};
 /**
  * 
  */
@@ -48,8 +45,11 @@ class HUNTER_API AHPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	FInputRestrictionToken AddRestriction(EInputRestriction Restriction);
-	void RemoveRestriction(FInputRestrictionToken Token) { ActiveRestrictions.Remove(Token.Id); }
+	/*Any system that adds a restriction must remove it.
+	If you want to select multiple restriction, you should use  | operation*/
+	void AddRestriction(EInputRestriction Restriction) { ActiveRestrictions |= Restriction; }
+
+	void RemoveRestriction(EInputRestriction Restriction) { ActiveRestrictions &= (~Restriction); }
 protected:
 
 	virtual void SetupInputComponent() override;
@@ -78,9 +78,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMax = 30.0f;
 
-	int32 NextTokenId = 1;
-
-	TMap<int32, EInputRestriction> ActiveRestrictions;
+	EInputRestriction ActiveRestrictions;
 
 private:
 	UPROPERTY()

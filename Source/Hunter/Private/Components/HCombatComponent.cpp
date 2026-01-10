@@ -6,6 +6,7 @@
 #include "HBaseCharacter.h"
 #include "Interfaces/HWeaponOwnerInterface.h"
 #include "Types/WeaponTypes.h"
+#include "Player/HPlayerController.h"
 
 UHCombatComponent::UHCombatComponent()
 {
@@ -13,17 +14,47 @@ UHCombatComponent::UHCombatComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UHCombatComponent::TryAttack() const
+void UHCombatComponent::TryAttack()
 {
 	if (!CanAttack()) { return; }
+
+	if (!CachedCharacter) { return; }
 
 	if (!CachedCharacter->Implements<UHWeaponOwnerInterface>()) { return; }
 
 	const UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
 	WeaponComponent->Attack();
+	if (!ensure(WeaponComponent)) { return; }
+
+	AHPlayerController* PlayerController = Cast<AHPlayerController>(CachedCharacter->GetController());
+	if (!ensure(PlayerController)) { return; }
+	
+	
 
 	const EMoveSet MoveSet = WeaponComponent->GetMoveSet();
 	CachedCharacter->PlayAttackAnim(MoveSet);
+}
+
+void UHCombatComponent::OnAttackWindowBegin()
+{
+	if (!CachedCharacter) { return; }
+
+	AHPlayerController* PlayerController = Cast<AHPlayerController>(CachedCharacter->GetController());
+	if (!PlayerController) { return; }
+
+	PlayerController->AddRestriction(EInputRestriction::BlockMove);
+	/*должен включать overlap у оружия*/
+}
+
+void UHCombatComponent::OnAttackWindowEnd()
+{
+	if (!CachedCharacter) { return; }
+
+	AHPlayerController* PlayerController = Cast<AHPlayerController>(CachedCharacter->GetController());
+	if (!PlayerController) { return; }
+
+	PlayerController->RemoveRestriction(EInputRestriction::BlockMove);
+	/*должен отключать overlap у оружия*/
 }
 
 
@@ -34,15 +65,10 @@ void UHCombatComponent::BeginPlay()
 	ensure(CachedCharacter);
 }
 
-
-void UHCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
 bool UHCombatComponent::CanAttack() const
 {
 	/*Позже нужны условия*/
+	if (!CachedCharacter) { return false; }
 	return !CachedCharacter->IsAnyAnimMontageActive();
 }
 

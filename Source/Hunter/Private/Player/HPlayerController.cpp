@@ -8,12 +8,6 @@
 
 DEFINE_LOG_CATEGORY_STATIC(ControllerLog, All, All)
 
-FInputRestrictionToken AHPlayerController::AddRestriction(EInputRestriction Restriction)
-{
-	const int32 TokenId = NextTokenId++;
-	ActiveRestrictions.Add(TokenId, Restriction);
-	return { TokenId };
-}
 
 void AHPlayerController::SetupInputComponent()
 {
@@ -115,14 +109,7 @@ void AHPlayerController::InitializeMappingContexts()
 
 bool AHPlayerController::HasInputRestriction(EInputRestriction Restriction) const
 {
-	for (const auto& Pair : ActiveRestrictions)
-	{
-		if ((Pair.Value & Restriction) != EInputRestriction::None)
-		{
-			return true;
-		}
-	}
-	return false;
+	return (ActiveRestrictions & Restriction) != EInputRestriction::None;
 }
 
 

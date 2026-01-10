@@ -15,13 +15,13 @@ class HUNTER_API UHCombatComponent : public UActorComponent
 
 public:	
 	UHCombatComponent();
-	void TryAttack() const;
+	void TryAttack();
+	void OnAttackWindowBegin();
+	void OnAttackWindowEnd();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 private:
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedCharacter;
