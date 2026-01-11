@@ -20,7 +20,7 @@ struct FAttackInfo {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
-	float Damage;
+	float DamageModifier;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
 	float StaminaCost;

@@ -18,6 +18,10 @@ void UAnimNotifyState_AttackWindow::NotifyBegin(USkeletalMeshComponent* MeshComp
 		return;
 	}
 	CombatComponent->OnAttackWindowBegin();
+
+	UAnimInstance* AnimInstance = MeshComp->GetAnimInstance();
+	if (!AnimInstance) { return; }
+	AnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromMontagesOnly);
 }
 
 void UAnimNotifyState_AttackWindow::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
@@ -33,4 +37,8 @@ void UAnimNotifyState_AttackWindow::NotifyEnd(USkeletalMeshComponent* MeshComp, 
 		return;
 	}
 	CombatComponent->OnAttackWindowEnd();
+
+	UAnimInstance* AnimInstance = MeshComp->GetAnimInstance();
+	if (!AnimInstance) { return; }
+	AnimInstance->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 }

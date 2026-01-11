@@ -15,6 +15,7 @@ class UHCharacterMovementComponent;
 class UHHealthComponent;
 class UHCombatComponent;
 class UHWeaponComponent;
+class UHAnimInstanceBase;
 
 /*
 явл€етс€ классом дл€ игрока, пока нет других character
@@ -73,7 +74,7 @@ private:
 	TObjectPtr<UHCharacterMovementComponent> CachedMovementComponent;
 
 	UPROPERTY()
-	TObjectPtr<UAnimInstance> CachedAnimInstance;
+	TObjectPtr<UHAnimInstanceBase> CachedAnimInstance;
 
 	bool bIsAnimMontageActive = false;
 

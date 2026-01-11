@@ -16,6 +16,8 @@ class HUNTER_API UHAnimInstanceBase : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
+	UHAnimInstanceBase();
+
 	UFUNCTION(BlueprintPure, Category = "Mode", meta = (BlueprintThreadSafe))
 	ECharacterMode GetCurrentCachedCharacterMode() const { return CachedCharacterMode; }
 

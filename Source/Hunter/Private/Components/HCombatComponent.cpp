@@ -43,6 +43,10 @@ void UHCombatComponent::OnAttackWindowBegin()
 	if (!PlayerController) { return; }
 
 	PlayerController->AddRestriction(EInputRestriction::BlockMove);
+
+	UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
+
+	WeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Overlap);
 	/*должен включать overlap у оружия*/
 }
 
@@ -54,6 +58,9 @@ void UHCombatComponent::OnAttackWindowEnd()
 	if (!PlayerController) { return; }
 
 	PlayerController->RemoveRestriction(EInputRestriction::BlockMove);
+	UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
+
+	WeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Ignore);
 	/*должен отключать overlap у оружия*/
 }
 

@@ -20,10 +20,11 @@ public:
 	void Attack() const;
 	EMoveSet GetMoveSet() const;
 
+	void SetWeaponCollisionMode(ECollisionResponse NewMode);
+
 protected:
 	virtual void BeginPlay() override;
 
-	/*Тут надо, чтобы он принимал блюприт версию baseWeapon*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<AHBaseWeapon> DefaultWeaponClass;
 

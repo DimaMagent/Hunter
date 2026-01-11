@@ -9,6 +9,7 @@
 #include "Components/HHealthComponent.h"
 #include "Components/HCombatComponent.h"
 #include "Components/HWeaponComponent.h"
+#include "Animations/HAnimInstanceBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(CharacterLog, All, All)
 
@@ -105,7 +106,7 @@ void AHBaseCharacter::Caching()
 
 	USkeletalMeshComponent* SkeletalMesh = GetMesh();
 	if (SkeletalMesh) {
-		CachedAnimInstance = SkeletalMesh->GetAnimInstance();
+		CachedAnimInstance = Cast<UHAnimInstanceBase>(SkeletalMesh->GetAnimInstance());
 	}
 }
 

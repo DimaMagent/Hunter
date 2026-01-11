@@ -8,6 +8,8 @@
 #include "HBaseWeapon.generated.h"
 
 
+class UCapsuleComponent;
+
 UCLASS()
 class HUNTER_API AHBaseWeapon : public AActor
 {
@@ -20,8 +22,14 @@ public:
 
 	virtual void Attack() const;
 
+	void SetCollsionMode(ECollisionResponse NewMode);
+
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	virtual void OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	EMoveSet WeaponMoveSet = EMoveSet::Unarmed;
@@ -32,4 +40,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Collision")
+	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+
 };

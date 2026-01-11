@@ -4,6 +4,11 @@
 #include "Animations/HAnimInstanceBase.h"
 #include "HBaseCharacter.h"
 
+UHAnimInstanceBase::UHAnimInstanceBase()
+{
+	SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
+}
+
 void UHAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);

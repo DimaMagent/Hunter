@@ -43,3 +43,8 @@ EMoveSet UHWeaponComponent::GetMoveSet() const {
 	return CurrentWeapon->GetMoveSet();
 }
 
+void UHWeaponComponent::SetWeaponCollisionMode(ECollisionResponse NewMode)
+{
+	CurrentWeapon->SetCollsionMode(NewMode);
+}
+
