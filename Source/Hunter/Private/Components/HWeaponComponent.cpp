@@ -4,6 +4,7 @@
 #include "Components/HWeaponComponent.h"
 #include "Weapons/HBaseWeapon.h"
 #include "HBaseCharacter.h"
+#include "Types/CombatTypes.h"
 
 UHWeaponComponent::UHWeaponComponent()
 {
@@ -11,10 +12,37 @@ UHWeaponComponent::UHWeaponComponent()
 
 }
 
-void UHWeaponComponent::Attack() const
+void UHWeaponComponent::BeginAttack(EAttackIntent CurrentAttackIntent) const
 {
 	if (!CurrentWeapon) { return; }
-	CurrentWeapon->Attack();
+
+	CurrentWeapon->AttackDataHandle(CurrentAttackIntent);
+
+	UAnimMontage* AttackAnim = CurrentWeapon->GetCurrentComboAnim(CurrentAttackIntent);
+
+	if (!AttackAnim) { return; }
+
+	if (!CachedOwner) { return; }
+
+	CachedOwner->PlayAttackAnim(AttackAnim);
+}
+
+void UHWeaponComponent::Notify_OnComboWindowEnd(bool IsComboInputBuffered) {
+	CurrentWeapon->Notify_OnComboWindowEnd(IsComboInputBuffered);
+
+	if (!IsComboInputBuffered) { return; }
+
+	if (!CachedOwner) { return; }
+
+	FName CurrentStepName;
+	if (!CurrentWeapon->GetCurrentStepName(CurrentStepName)) { return; }
+
+	CachedOwner->PlayComboStep(CurrentStepName);
+}
+
+void UHWeaponComponent::Notify_OnComboEnd()
+{
+	CurrentWeapon->Notify_OnComboEnd();
 }
 
 
@@ -27,13 +55,14 @@ void UHWeaponComponent::BeginPlay()
 
 		CurrentWeapon = GetWorld()->SpawnActor<AHBaseWeapon>(DefaultWeaponClass);
 
-		const AHBaseCharacter* Owner = Cast<AHBaseCharacter>(GetOwner());
-		check(Owner);
+		CachedOwner = Cast<AHBaseCharacter>(GetOwner());
+		check(CachedOwner);
 
-		const auto OwnerMesh = Owner->GetMesh();
+		const auto OwnerMesh = CachedOwner->GetMesh();
 		check(OwnerMesh);
 
 		CurrentWeapon->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+		CurrentWeapon->SetOwner(GetOwner());
 	}
 	ensure(CurrentWeapon);
 	

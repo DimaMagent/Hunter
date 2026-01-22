@@ -9,13 +9,8 @@ AHSwordWeapon::AHSwordWeapon()
 	PrimaryActorTick.bCanEverTick = false;
 
 	WeaponMoveSet = EMoveSet::Sword;
-
 }
 
-void AHSwordWeapon::Attack() const
-{
-	UE_LOG(LogTemp, Display, TEXT("ATTACK"));
-}
 
 void AHSwordWeapon::BeginPlay()
 {

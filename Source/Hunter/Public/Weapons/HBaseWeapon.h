@@ -4,11 +4,59 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Types/WeaponTypes.h"
+#include "Types/CombatTypes.h"
 #include "HBaseWeapon.generated.h"
 
 
 class UCapsuleComponent;
+
+USTRUCT(BlueprintType)
+struct FAttackData {
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
+	EAttackId AttackType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = "0"))
+	float DamageModifier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = "0"))
+	float StaminaCostModifier;
+
+};
+
+USTRUCT(BlueprintType)
+struct FSteps {
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combo")
+	FName MontageSectionName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combo")
+	FAttackData AttackData;
+};
+
+USTRUCT(BlueprintType)
+struct FComboDefinition {
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combo")
+	UAnimMontage* ComboMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combo")
+	TArray<FSteps> ComboSteps;
+
+	FSteps GetCurrentComboStep() const { return ComboSteps[CurrentComboStep]; }
+
+	FAttackData GetCurrentComboAttackData() const { return ComboSteps[CurrentComboStep].AttackData; }
+
+	void NextCombo() { CurrentComboStep = (CurrentComboStep + 1) % ComboSteps.Num(); }
+
+	void ClearCombo() { CurrentComboStep = 0; }
+
+private:
+	int32 CurrentComboStep = 0;
+};
 
 UCLASS()
 class HUNTER_API AHBaseWeapon : public AActor
@@ -18,14 +66,28 @@ class HUNTER_API AHBaseWeapon : public AActor
 public:	
 	AHBaseWeapon();
 
-	virtual EMoveSet GetMoveSet() const { return WeaponMoveSet; }
+	EMoveSet GetMoveSet() const { return WeaponMoveSet; }
 
-	virtual void Attack() const;
+	virtual void AttackDataHandle(EAttackIntent AttackIntent);
 
 	void SetCollsionMode(ECollisionResponse NewMode);
 
+	void Notify_OnComboWindowEnd(bool IsComboInputBuffered);
+
+	void Notify_OnComboEnd();
+
+	UAnimMontage* GetCurrentComboAnim(EAttackIntent AttackIntent) const;
+
+	bool GetCurrentStepName(FName& OutStepName) const;
+
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float BaseDamage = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float BaseStaminaCost = 10.0f;
 
 	UFUNCTION()
 	virtual void OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,
@@ -34,14 +96,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	EMoveSet WeaponMoveSet = EMoveSet::Unarmed;
 
-	/*Я ещё пока не решил, какая будет архитектура у атак оружием, но они должны как-то влиять на анимации, хотя у меня пока нет анимаций*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
-	FAttackInfo AtatackInfo;
+	TMap<EAttackIntent, FComboDefinition> WeaponAttack;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Collision")
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+
+private:
+	EAttackIntent LastAttackIntent;
+	float CurrentDamage = 0.0f;
+	float CurrentStaminaCost = 0.0f;
 
 };

@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Types/WeaponTypes.h"
+#include "Types/CombatTypes.h"
 #include "HWeaponComponent.generated.h"
 
 class AHBaseWeapon;
+class AHBaseCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HUNTER_API UHWeaponComponent : public UActorComponent
@@ -17,7 +19,12 @@ class HUNTER_API UHWeaponComponent : public UActorComponent
 public:	
 	UHWeaponComponent();
 
-	void Attack() const;
+	void BeginAttack(EAttackIntent CurrentAttackIntent) const;
+
+	void Notify_OnComboWindowEnd(bool IsComboInputBuffered);
+
+	void Notify_OnComboEnd();
+
 	EMoveSet GetMoveSet() const;
 
 	void SetWeaponCollisionMode(ECollisionResponse NewMode);
@@ -30,5 +37,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AHBaseWeapon> CurrentWeapon;
+private:
+
+	UPROPERTY()
+	TObjectPtr<AHBaseCharacter> CachedOwner;
 		
 };

@@ -6,7 +6,8 @@
 #include "Weapons/HBaseWeapon.h"
 #include "HSwordWeapon.generated.h"
 
-
+/* Этот класс вообще вомжно сделать чисто блюпринтовым
+*/
 UCLASS()
 class HUNTER_API AHSwordWeapon : public AHBaseWeapon
 {
@@ -14,8 +15,6 @@ class HUNTER_API AHSwordWeapon : public AHBaseWeapon
 	
 public:
 	AHSwordWeapon();
-
-	virtual void Attack() const override;
 
 protected:
 	virtual void BeginPlay() override;

@@ -3,6 +3,7 @@
 
 #include "Weapons/HBaseWeapon.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/HHealthComponent.h"
 
 AHBaseWeapon::AHBaseWeapon()
 {
@@ -15,6 +16,7 @@ AHBaseWeapon::AHBaseWeapon()
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CollisionComponent");
 	CapsuleComponent->SetupAttachment(GetRootComponent());
 	CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	
 }
 
 void AHBaseWeapon::BeginPlay()
@@ -28,13 +30,52 @@ void AHBaseWeapon::BeginPlay()
 void AHBaseWeapon::OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Display, TEXT("Collision with %s"), *OtherActor->GetName());
-}
-void AHBaseWeapon::Attack() const {
+	const AActor* OwnerActor = GetOwner();
+	if (!OwnerActor) {
+		UE_LOG(LogTemp, Warning, TEXT("Weapon has no owner!"));
+		return;
+	}
 
+	if (OtherActor == GetOwner()) { return; }
+
+	UHHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHHealthComponent>();
+	if (!HealthComponent) { return; }
+
+	HealthComponent->TakeDamage(CurrentDamage);
+}
+void AHBaseWeapon::AttackDataHandle(EAttackIntent AttackIntent) {
+	if (!ensure(WeaponAttack.Contains(AttackIntent))) { return; }
+	/*Какой-то баг с уроном есть: Damage не меняется в зависимости от атаки*/
+	LastAttackIntent = AttackIntent;
+	CurrentDamage = BaseDamage * WeaponAttack[AttackIntent].GetCurrentComboAttackData().DamageModifier;
+	CurrentStaminaCost = BaseStaminaCost * WeaponAttack[AttackIntent].GetCurrentComboAttackData().StaminaCostModifier;
+	
 }
 
 void AHBaseWeapon::SetCollsionMode(ECollisionResponse NewMode)
 {
 	CapsuleComponent->SetCollisionResponseToAllChannels(NewMode);
+}
+
+void AHBaseWeapon::Notify_OnComboWindowEnd(bool IsComboInputBuffered) {
+	if (!WeaponAttack.Contains(LastAttackIntent)) { return; }
+
+	IsComboInputBuffered ? WeaponAttack[LastAttackIntent].NextCombo() : WeaponAttack[LastAttackIntent].ClearCombo();
+}
+
+void AHBaseWeapon::Notify_OnComboEnd() {
+	WeaponAttack[LastAttackIntent].ClearCombo();
+}
+
+UAnimMontage* AHBaseWeapon::GetCurrentComboAnim(EAttackIntent AttackIntent) const
+{
+	if (!WeaponAttack.Contains(AttackIntent)) { return nullptr; }
+	return WeaponAttack[AttackIntent].ComboMontage;
+}
+
+bool AHBaseWeapon::GetCurrentStepName(FName& OutStepName) const {
+	if (!WeaponAttack.Contains(LastAttackIntent)) { return false; }
+
+	OutStepName = WeaponAttack[LastAttackIntent].GetCurrentComboStep().MontageSectionName;
+	return true;
 }

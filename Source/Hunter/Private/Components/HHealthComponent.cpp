@@ -12,6 +12,10 @@ UHHealthComponent::UHHealthComponent()
 void UHHealthComponent::TakeDamage(float DamageAmount)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	const AActor* Owner = GetOwner();
+	if (Owner) {
+		UE_LOG(LogTemp, Display, TEXT("%s: Current Health: %f"), *GetOwner()->GetName(), CurrentHealth);
+	}
 	OnHealthChanged.Broadcast(CurrentHealth);
 }
 

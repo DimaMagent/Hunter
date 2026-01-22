@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Types/CharacterTypes.h"
 #include "Interfaces/HWeaponOwnerInterface.h"
-#include "Types/WeaponTypes.h"
+#include "Types/CombatTypes.h"
 #include "HBaseCharacter.generated.h"
 
 class USpringArmComponent;
@@ -33,10 +33,11 @@ public:
 
 	void Move(const FVector2D MoveAroundValue);
 	void LookAround(const FVector2D LookAxisValue);
-	void Attack();
+	void Attack(EAttackIntent AttackIntent);
 	void RunStart();
 	void RunEnd();
-	virtual void PlayAttackAnim(const EMoveSet CurrentMoveSet);
+	virtual void PlayAttackAnim(UAnimMontage* AttackAnimMontage);
+	void PlayComboStep(FName StepName) const;
 	bool IsAnyAnimMontageActive() const { return bIsAnimMontageActive; }
 
 	virtual UHWeaponComponent* GetWeaponComponent_Implementation() const override { return WeaponComponent; };
@@ -64,9 +65,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mode")
 	ECharacterMode CharacterMode;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animations")
-	TMap<EMoveSet, UAnimMontage*> AttackAnims;
 
 private:
 

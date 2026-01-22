@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AnimNotifies/AnimNotifyState_AttackWindow.h"
+#include "AnimNotifies/AnimNotifyState_ComboWindow.h"
 #include "HBaseCharacter.h"
 #include "Components/HCombatComponent.h"
 
-void UAnimNotifyState_AttackWindow::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
+void UAnimNotifyState_ComboWindow::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	if (!MeshComp) { return; }
 
@@ -17,11 +17,10 @@ void UAnimNotifyState_AttackWindow::NotifyBegin(USkeletalMeshComponent* MeshComp
 		UE_LOG(LogAnimation, Error, TEXT("Character %s has not combat component"), *Character->GetName());
 		return;
 	}
-	CombatComponent->Notify_OnAttackWindowBegin();
-
+	CombatComponent->Notify_OnComboWindowBegin();
 }
 
-void UAnimNotifyState_AttackWindow::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UAnimNotifyState_ComboWindow::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	if (!MeshComp) { return; }
 
@@ -33,6 +32,5 @@ void UAnimNotifyState_AttackWindow::NotifyEnd(USkeletalMeshComponent* MeshComp, 
 		UE_LOG(LogAnimation, Error, TEXT("Character %s has not combat component"), *Character->GetName());
 		return;
 	}
-	CombatComponent->Notify_OnAttackWindowEnd();
-
+	CombatComponent->Notify_OnComboWindowEnd();
 }

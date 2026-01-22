@@ -6,62 +6,58 @@
 #include "HBaseCharacter.h"
 #include "Interfaces/HWeaponOwnerInterface.h"
 #include "Types/WeaponTypes.h"
-#include "Player/HPlayerController.h"
+#include "Types/CombatTypes.h"
 
 UHCombatComponent::UHCombatComponent()
 {
-
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UHCombatComponent::TryAttack()
+void UHCombatComponent::TryAttack(EAttackIntent AttackIntent)
 {
 	if (!CanAttack()) { return; }
 
-	if (!CachedCharacter) { return; }
+	if (!CachedWeaponComponent) { return; }
 
-	if (!CachedCharacter->Implements<UHWeaponOwnerInterface>()) { return; }
-
-	const UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
-	WeaponComponent->Attack();
-	if (!ensure(WeaponComponent)) { return; }
-
-	AHPlayerController* PlayerController = Cast<AHPlayerController>(CachedCharacter->GetController());
-	if (!ensure(PlayerController)) { return; }
-	
-	
-
-	const EMoveSet MoveSet = WeaponComponent->GetMoveSet();
-	CachedCharacter->PlayAttackAnim(MoveSet);
+	if (IsAttackInProgress()) {
+		if (bComboInputAllowed) {
+			bComboInputBuffered = true;
+		}
+	}
+	else {
+		CachedWeaponComponent->BeginAttack(AttackIntent);
+	}
 }
 
-void UHCombatComponent::OnAttackWindowBegin()
+void UHCombatComponent::Notify_OnAttackWindowBegin()
 {
-	if (!CachedCharacter) { return; }
+	if (!CachedWeaponComponent) { return; }
 
-	AHPlayerController* PlayerController = Cast<AHPlayerController>(CachedCharacter->GetController());
-	if (!PlayerController) { return; }
-
-	PlayerController->AddRestriction(EInputRestriction::BlockMove);
-
-	UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
-
-	WeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Overlap);
-	/*должен включать overlap у оружия*/
+	CachedWeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Overlap);
 }
 
-void UHCombatComponent::OnAttackWindowEnd()
+void UHCombatComponent::Notify_OnAttackWindowEnd()
 {
-	if (!CachedCharacter) { return; }
+	if (!CachedWeaponComponent) { return; }
 
-	AHPlayerController* PlayerController = Cast<AHPlayerController>(CachedCharacter->GetController());
-	if (!PlayerController) { return; }
+	CachedWeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Ignore);
+}
 
-	PlayerController->RemoveRestriction(EInputRestriction::BlockMove);
-	UHWeaponComponent* WeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
+void UHCombatComponent::Notify_OnComboWindowBegin()
+{
+	bComboInputAllowed = true;
+	bComboInputBuffered = false;
+}
 
-	WeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Ignore);
-	/*должен отключать overlap у оружия*/
+void UHCombatComponent::Notify_OnComboWindowEnd()
+{
+	bComboInputAllowed = false;
+	CachedWeaponComponent->Notify_OnComboWindowEnd(bComboInputBuffered);
+}
+
+void UHCombatComponent::Notify_OnEndCombo()
+{
+	CachedWeaponComponent->Notify_OnComboEnd();
 }
 
 
@@ -69,14 +65,22 @@ void UHCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	CachedCharacter = Cast<AHBaseCharacter>(GetOwner());
-	ensure(CachedCharacter);
+	check(CachedCharacter);
+	if (CachedCharacter->Implements<UHWeaponOwnerInterface>()) {
+		CachedWeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
+	}
+	ensure(CachedWeaponComponent);
 }
 
 bool UHCombatComponent::CanAttack() const
 {
 	/*Позже нужны условия*/
-	if (!CachedCharacter) { return false; }
-	return !CachedCharacter->IsAnyAnimMontageActive();
+	return true;
+}
+
+bool UHCombatComponent::IsAttackInProgress() const
+{
+	return CachedCharacter && CachedCharacter->IsAnyAnimMontageActive();
 }
 
 

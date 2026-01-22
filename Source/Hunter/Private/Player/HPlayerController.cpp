@@ -5,6 +5,7 @@
 #include "HBaseCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Types/CombatTypes.h"
 
 DEFINE_LOG_CATEGORY_STATIC(ControllerLog, All, All)
 
@@ -16,6 +17,7 @@ void AHPlayerController::SetupInputComponent()
 		EnhancedInput->BindAction(AdventureModeActions.MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnMove);
 		EnhancedInput->BindAction(AdventureModeActions.LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnLookAround);
 		EnhancedInput->BindAction(AdventureModeActions.AttackAction, ETriggerEvent::Started, this, &AHPlayerController::OnAttack);
+		EnhancedInput->BindAction(AdventureModeActions.AlternativeAttackAction, ETriggerEvent::Started, this, &AHPlayerController::OnAlternativeAttack);
 		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnRunStart);
 		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Completed, this, &AHPlayerController::OnRunEnd);
 	}
@@ -58,7 +60,16 @@ void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
-	CachedCharacter->Attack();
+	CachedCharacter->Attack(EAttackIntent::Standart);
+}
+
+void AHPlayerController::OnAlternativeAttack(const FInputActionInstance& Instance)
+{
+	if (HasInputRestriction(EInputRestriction::BlockAttack)) { return; }
+
+	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
+	if (!CachedCharacter && !bIsTriggered) { return; }
+	CachedCharacter->Attack(EAttackIntent::Alternative);
 }
 
 void AHPlayerController::OnRunStart(const FInputActionInstance& Instance)
@@ -84,6 +95,7 @@ bool AHPlayerController::ValidateInputActions() const
 	bool bIsValidAdventureModeActions = ensureMsgf(AdventureModeActions.MoveAction, TEXT("MoveAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.LookAction, TEXT("LookAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.AttackAction, TEXT("AttackAction is not set on %s"), *GetName()) &&
+		ensureMsgf(AdventureModeActions.AlternativeAttackAction, TEXT("AlternativeAttackAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.RunAction, TEXT("RunAction is not set on %s"), *GetName());;
 	return bIsValidAdventureModeActions;
 }

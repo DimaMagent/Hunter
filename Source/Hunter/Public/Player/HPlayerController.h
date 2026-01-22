@@ -27,8 +27,12 @@ struct FAdventureModeAction
 	TObjectPtr<UInputAction> AttackAction;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> AlternativeAttackAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> RunAction;
 };
+
 UENUM()
 enum class EInputRestriction : int32 {
 	None = 0,
@@ -38,7 +42,7 @@ enum class EInputRestriction : int32 {
 ENUM_CLASS_FLAGS(EInputRestriction);
 
 /**
- * 
+ * Систему с input надо переделать. 1) Определиться, нужно ли разделение inputmode. 2) Сделать систему input более расширяемой, например, добавить какой-нибудь контейнер для хранения input
  */
 UCLASS()
 class HUNTER_API AHPlayerController : public APlayerController
@@ -52,6 +56,7 @@ public:
 	void RemoveRestriction(EInputRestriction Restriction) { ActiveRestrictions &= (~Restriction); }
 protected:
 
+
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* PawnToPossess) override;
@@ -61,6 +66,8 @@ protected:
 	void OnLookAround(const FInputActionInstance& Instance);
 
 	void OnAttack(const FInputActionInstance& Instance);
+
+	void OnAlternativeAttack(const FInputActionInstance& Instance);
 
 	void OnRunStart(const FInputActionInstance& Instance);
 
@@ -81,10 +88,9 @@ protected:
 	EInputRestriction ActiveRestrictions;
 
 private:
+
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedCharacter;
-
-
 
 	bool ValidateInputActions() const;
 	bool ValidateMappingContexts() const;

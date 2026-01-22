@@ -48,9 +48,10 @@ void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
 
 }
 
-void AHBaseCharacter::Attack() {
+void AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
 	EnsureFightMode();
-	CombatComponent->TryAttack();
+	UE_LOG(CharacterLog, Display, TEXT("Attack Intent: %i"), AttackIntent);
+	CombatComponent->TryAttack(AttackIntent);
 }
 
 void AHBaseCharacter::RunStart() {
@@ -62,10 +63,8 @@ void AHBaseCharacter::RunEnd() {
 }
 
 
-void AHBaseCharacter::PlayAttackAnim(const EMoveSet CurrentMoveSet)
+void AHBaseCharacter::PlayAttackAnim(UAnimMontage* AttackAnimMontage)
 { 
-	if (!AttackAnims.Contains(CurrentMoveSet)) { return; }
-	UAnimMontage* AttackAnimMontage = AttackAnims[CurrentMoveSet];
 
 	if (!AttackAnimMontage) { return; }
 
@@ -76,6 +75,15 @@ void AHBaseCharacter::PlayAttackAnim(const EMoveSet CurrentMoveSet)
 	bIsAnimMontageActive = true;
 
 	UE_LOG(CharacterLog, Display, TEXT("Play attack anim montage"));
+}
+
+void AHBaseCharacter::PlayComboStep(FName StepName) const
+{
+	if (!CachedAnimInstance) { return; }
+
+	CachedAnimInstance->Montage_JumpToSection(StepName);
+
+	UE_LOG(CharacterLog, Display, TEXT("Plat next combo step"));
 }
 
 

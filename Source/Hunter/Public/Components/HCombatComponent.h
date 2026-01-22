@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Types/CombatTypes.h"
 #include "HCombatComponent.generated.h"
 
 class AHBaseCharacter;
+class UHWeaponComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HUNTER_API UHCombatComponent : public UActorComponent
@@ -15,16 +17,28 @@ class HUNTER_API UHCombatComponent : public UActorComponent
 
 public:	
 	UHCombatComponent();
-	void TryAttack();
-	void OnAttackWindowBegin();
-	void OnAttackWindowEnd();
+	void TryAttack(EAttackIntent AttackIntent);
+	void Notify_OnAttackWindowBegin();
+	void Notify_OnAttackWindowEnd();
+
+	void Notify_OnComboWindowBegin();
+	void Notify_OnComboWindowEnd();
+	
+	void Notify_OnEndCombo();
 
 protected:
 	virtual void BeginPlay() override;
+
+	bool bComboInputAllowed = false;
+	bool bComboInputBuffered = false;
 
 private:
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedCharacter;
 
+	UPROPERTY()
+	TObjectPtr<UHWeaponComponent> CachedWeaponComponent;
+
 	bool CanAttack() const;
+	bool IsAttackInProgress() const;
 };
