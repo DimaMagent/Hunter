@@ -61,6 +61,7 @@ void AHBaseWeapon::Notify_OnComboWindowEnd(bool IsComboInputBuffered) {
 	if (!WeaponAttack.Contains(LastAttackIntent)) { return; }
 
 	IsComboInputBuffered ? WeaponAttack[LastAttackIntent].NextCombo() : WeaponAttack[LastAttackIntent].ClearCombo();
+	AttackDataHandle(LastAttackIntent);
 }
 
 void AHBaseWeapon::Notify_OnComboEnd() {
