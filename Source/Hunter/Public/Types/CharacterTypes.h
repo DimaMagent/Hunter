@@ -11,3 +11,5 @@ enum class ECharacterMode : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterModeChanged, ECharacterMode, NewMode);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterRecover);

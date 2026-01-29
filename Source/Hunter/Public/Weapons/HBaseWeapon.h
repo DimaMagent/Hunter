@@ -72,13 +72,15 @@ public:
 
 	void SetCollsionMode(ECollisionResponse NewMode);
 
-	void Notify_OnComboWindowEnd(bool IsComboInputBuffered);
+	void NextComboDataHandle(bool IsComboInputBuffered);
 
 	void Notify_OnComboEnd();
 
 	UAnimMontage* GetCurrentComboAnim(EAttackIntent AttackIntent) const;
 
 	bool GetCurrentStepName(FName& OutStepName) const;
+
+	float GetCurrentStaminaCost() const { return CurrentStaminaCost; }
 
 protected:
 	virtual void BeginPlay() override;

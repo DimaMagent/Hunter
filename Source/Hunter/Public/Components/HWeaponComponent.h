@@ -21,7 +21,9 @@ public:
 
 	void BeginAttack(EAttackIntent CurrentAttackIntent) const;
 
-	void Notify_OnComboWindowEnd(bool IsComboInputBuffered);
+	void TryBeginAttack(EAttackIntent CurrentAttackIntent) const;
+
+	void ContinueCombo(bool IsComboInputBuffered);
 
 	void Notify_OnComboEnd();
 

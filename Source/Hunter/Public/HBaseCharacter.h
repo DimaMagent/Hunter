@@ -16,6 +16,8 @@ class UHHealthComponent;
 class UHCombatComponent;
 class UHWeaponComponent;
 class UHAnimInstanceBase;
+class UHStaminaComponent;
+
 
 /*
 явл€етс€ классом дл€ игрока, пока нет других character
@@ -29,6 +31,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Mode")
 	FOnCharacterModeChanged OnCharacterModeChanged;
 
+	FOnCharacterRecover OnCharacterRecovery;
+
 	AHBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
 	void Move(const FVector2D MoveAroundValue);
@@ -38,7 +42,10 @@ public:
 	void RunEnd();
 	virtual void PlayAttackAnim(UAnimMontage* AttackAnimMontage);
 	void PlayComboStep(FName StepName) const;
+	void ChangeStamina(float Count);
 	bool IsAnyAnimMontageActive() const { return bIsAnimMontageActive; }
+	bool IsCharacterAlive() const;
+	bool IsCharacterHasStamina() const;
 
 	virtual UHWeaponComponent* GetWeaponComponent_Implementation() const override { return WeaponComponent; };
 
@@ -48,20 +55,33 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	void Recovery();
+
+	FTimerHandle CharacterRecoveryTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UHHealthComponent> HealthComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UHCombatComponent> CombatComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UHWeaponComponent> WeaponComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UHStaminaComponent> StaminaComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recovery")
+	float RecoveryRate = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recovery")
+	float RecoveryDelay = 2.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mode")
 	ECharacterMode CharacterMode;

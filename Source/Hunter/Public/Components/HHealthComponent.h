@@ -20,6 +20,8 @@ public:
 	float GetHealth() const { return CurrentHealth; }
 	void TakeDamage(float DamageAmount);
 
+	bool IsHasHealth() const { return CurrentHealth > 0; }
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0"))
 	float MaxHealth = 100.0f;

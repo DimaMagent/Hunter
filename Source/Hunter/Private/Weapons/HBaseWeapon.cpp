@@ -45,7 +45,6 @@ void AHBaseWeapon::OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,
 }
 void AHBaseWeapon::AttackDataHandle(EAttackIntent AttackIntent) {
 	if (!ensure(WeaponAttack.Contains(AttackIntent))) { return; }
-	/*Какой-то баг с уроном есть: Damage не меняется в зависимости от атаки*/
 	LastAttackIntent = AttackIntent;
 	CurrentDamage = BaseDamage * WeaponAttack[AttackIntent].GetCurrentComboAttackData().DamageModifier;
 	CurrentStaminaCost = BaseStaminaCost * WeaponAttack[AttackIntent].GetCurrentComboAttackData().StaminaCostModifier;
@@ -57,7 +56,7 @@ void AHBaseWeapon::SetCollsionMode(ECollisionResponse NewMode)
 	CapsuleComponent->SetCollisionResponseToAllChannels(NewMode);
 }
 
-void AHBaseWeapon::Notify_OnComboWindowEnd(bool IsComboInputBuffered) {
+void AHBaseWeapon::NextComboDataHandle(bool IsComboInputBuffered) {
 	if (!WeaponAttack.Contains(LastAttackIntent)) { return; }
 
 	IsComboInputBuffered ? WeaponAttack[LastAttackIntent].NextCombo() : WeaponAttack[LastAttackIntent].ClearCombo();

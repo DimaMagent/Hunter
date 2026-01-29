@@ -24,11 +24,18 @@ void UHWeaponComponent::BeginAttack(EAttackIntent CurrentAttackIntent) const
 
 	if (!CachedOwner) { return; }
 
+	CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost());
+
 	CachedOwner->PlayAttackAnim(AttackAnim);
 }
 
-void UHWeaponComponent::Notify_OnComboWindowEnd(bool IsComboInputBuffered) {
-	CurrentWeapon->Notify_OnComboWindowEnd(IsComboInputBuffered);
+void UHWeaponComponent::TryBeginAttack(EAttackIntent CurrentAttackIntent) const
+{
+	if (!CurrentWeapon) { return; }
+}
+
+void UHWeaponComponent::ContinueCombo(bool IsComboInputBuffered) {
+	CurrentWeapon->NextComboDataHandle(IsComboInputBuffered);
 
 	if (!IsComboInputBuffered) { return; }
 
@@ -36,6 +43,8 @@ void UHWeaponComponent::Notify_OnComboWindowEnd(bool IsComboInputBuffered) {
 
 	FName CurrentStepName;
 	if (!CurrentWeapon->GetCurrentStepName(CurrentStepName)) { return; }
+
+	CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost());
 
 	CachedOwner->PlayComboStep(CurrentStepName);
 }

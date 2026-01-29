@@ -41,4 +41,7 @@ private:
 
 	bool CanAttack() const;
 	bool IsAttackInProgress() const;
+
+	bool IsOwnerAlive() const;
+	bool IsOwnerHasStamina() const;
 };

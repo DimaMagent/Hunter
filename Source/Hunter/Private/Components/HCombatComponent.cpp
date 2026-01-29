@@ -8,6 +8,8 @@
 #include "Types/WeaponTypes.h"
 #include "Types/CombatTypes.h"
 
+DEFINE_LOG_CATEGORY_STATIC(CombatLog, All, All)
+
 UHCombatComponent::UHCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -52,7 +54,9 @@ void UHCombatComponent::Notify_OnComboWindowBegin()
 void UHCombatComponent::Notify_OnComboWindowEnd()
 {
 	bComboInputAllowed = false;
-	CachedWeaponComponent->Notify_OnComboWindowEnd(bComboInputBuffered);
+
+	if (!CanAttack()) { return; }
+	CachedWeaponComponent->ContinueCombo(bComboInputBuffered);
 }
 
 void UHCombatComponent::Notify_OnEndCombo()
@@ -74,13 +78,41 @@ void UHCombatComponent::BeginPlay()
 
 bool UHCombatComponent::CanAttack() const
 {
-	/*Позже нужны условия*/
-	return true;
+	return IsOwnerAlive() && IsOwnerHasStamina();
 }
 
 bool UHCombatComponent::IsAttackInProgress() const
 {
+	if (!CachedCharacter) { 
+		UE_LOG(CombatLog, Error, TEXT("Method IsAttackInProgress: CachedCharacter is not valid"))
+		return false; 
+	}
+
 	return CachedCharacter && CachedCharacter->IsAnyAnimMontageActive();
+}
+
+bool UHCombatComponent::IsOwnerAlive() const
+{
+	if (!CachedCharacter) { return false; }
+
+	bool bHasAlive = CachedCharacter->IsCharacterAlive();
+	if (!bHasAlive) {
+		UE_LOG(CombatLog, Display, TEXT("Character is dead, attack is impossible"));
+	}
+
+	return bHasAlive;
+}
+
+bool UHCombatComponent::IsOwnerHasStamina() const
+{
+	if (!CachedCharacter) { return false; }
+
+	bool bHasStamina = CachedCharacter->IsCharacterHasStamina();
+	if (!bHasStamina) {
+		UE_LOG(CombatLog, Display, TEXT("Not enough Stamina for attack"));
+	}
+
+	return bHasStamina;
 }
 
 

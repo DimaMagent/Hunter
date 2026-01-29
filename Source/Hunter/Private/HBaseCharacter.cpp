@@ -9,6 +9,7 @@
 #include "Components/HHealthComponent.h"
 #include "Components/HCombatComponent.h"
 #include "Components/HWeaponComponent.h"
+#include "Components/HStaminaComponent.h"
 #include "Animations/HAnimInstanceBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(CharacterLog, All, All)
@@ -28,6 +29,8 @@ AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 	WeaponComponent = CreateDefaultSubobject<UHWeaponComponent>("WeaponComponent");
 
 	CombatComponent = CreateDefaultSubobject<UHCombatComponent>("CombatComponent");
+
+	StaminaComponent = CreateDefaultSubobject<UHStaminaComponent>("StaminaComponent");
 
 	PrimaryActorTick.bCanEverTick = false;
 	
@@ -50,7 +53,6 @@ void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
 
 void AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
 	EnsureFightMode();
-	UE_LOG(CharacterLog, Display, TEXT("Attack Intent: %i"), AttackIntent);
 	CombatComponent->TryAttack(AttackIntent);
 }
 
@@ -86,6 +88,30 @@ void AHBaseCharacter::PlayComboStep(FName StepName) const
 	UE_LOG(CharacterLog, Display, TEXT("Plat next combo step"));
 }
 
+void AHBaseCharacter::ChangeStamina(float Count)
+{
+	/*Если в будущем что-либо на уровне character будет влиять на потребление выносливости, все вычисления должны будут происходить в этом методе*/
+	if (!StaminaComponent) { return; }
+
+	StaminaComponent->ChangeStamina(Count);
+
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+
+	World->GetTimerManager().SetTimer(CharacterRecoveryTimer, this, &AHBaseCharacter::Recovery, RecoveryRate, true, RecoveryDelay);
+}
+
+bool AHBaseCharacter::IsCharacterAlive() const {
+	if (!HealthComponent) { return false; }
+
+	return HealthComponent->IsHasHealth();
+}
+
+bool AHBaseCharacter::IsCharacterHasStamina() const
+{
+	if (!StaminaComponent) { return false; }
+	return StaminaComponent->IsHasStamina();
+}
 
 
 void AHBaseCharacter::ChangeCharacterMode(ECharacterMode NewMode)
@@ -131,12 +157,18 @@ void AHBaseCharacter::BeginPlay()
 	Caching();
 
 	ensure(HealthComponent);
+	ensure(StaminaComponent);
 	ensure(CombatComponent);
 	ensure(WeaponComponent);
 
 	CachedAnimInstance->OnMontageBlendingOut.AddDynamic(this, &AHBaseCharacter::OnMontageEnded);
 
 	CharacterMode = ECharacterMode::AdventureMode;
+}
+
+void AHBaseCharacter::Recovery()
+{
+	OnCharacterRecovery.Broadcast();
 }
 
 void AHBaseCharacter::EnsureFightMode()
