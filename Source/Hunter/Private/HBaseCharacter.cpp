@@ -37,7 +37,6 @@ AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 }
 
 void AHBaseCharacter::Move(const FVector2D MoveAroundValue) {
-	
 	AddMovementInput(GetActorForwardVector(), MoveAroundValue.X);
 	AddMovementInput(GetActorRightVector(), MoveAroundValue.Y);
 }
@@ -99,6 +98,12 @@ void AHBaseCharacter::ChangeStamina(float Count)
 	if (!World) { return; }
 
 	World->GetTimerManager().SetTimer(CharacterRecoveryTimer, this, &AHBaseCharacter::Recovery, RecoveryRate, true, RecoveryDelay);
+}
+
+void AHBaseCharacter::TakeDamage(float Count) {
+	if (!HealthComponent) { return; }
+
+	HealthComponent->TakeDamage(Count);
 }
 
 bool AHBaseCharacter::IsCharacterAlive() const {

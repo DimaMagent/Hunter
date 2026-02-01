@@ -2,6 +2,9 @@
 
 
 #include "HCharacterMovementComponent.h"
+#include "HBaseCharacter.h"
+
+DEFINE_LOG_CATEGORY_STATIC(MovementLog, All, All)
 
 float UHCharacterMovementComponent::GetLocalMoveRight() const
 {
@@ -32,10 +35,7 @@ float UHCharacterMovementComponent::GetLocalMoveForward() const
 
 void UHCharacterMovementComponent::RunStart()
 {
-	if (CurrentLocomotionMode == ELocomotionMode::RunMode) {
-		if (!CanRun()) { RunEnd(); }
-		return;
-	}
+	if (CurrentLocomotionMode == ELocomotionMode::RunMode) { return; }
 
 	if (!CanRun()) { return; }
 
@@ -53,6 +53,23 @@ void UHCharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	MaxWalkSpeed = MaxWalkModeSpeed;
+	CachedCharacter = GetOwner<AHBaseCharacter>();
+	ensure(CachedCharacter);
+
+}
+
+void UHCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (CurrentLocomotionMode == ELocomotionMode::RunMode && MovementMode == EMovementMode::MOVE_Walking) {
+
+		if (!CanRun()) { RunEnd(); }
+
+		if (CachedCharacter) {
+			CachedCharacter->ChangeStamina(-RunCostPerSecond * DeltaTime);
+		}
+	}
 }
 
 bool UHCharacterMovementComponent::CanRun() const
@@ -63,8 +80,17 @@ bool UHCharacterMovementComponent::CanRun() const
 	bool bIsMovingForward = MoveForward >= 0.0f;
 	bool bIsNotMovingSideways = FMath::Abs(GetLocalMoveRight()) < RunSideLimit;
 
-	/*Позже необходимо добавлять условия*/
 	return bIsMovingForward && bIsNotMovingSideways;
+}
+
+bool UHCharacterMovementComponent::IsOwnerHasStamina() const {
+	if (!CachedCharacter) { return false; }
+	bool bHasStamina = CachedCharacter->IsCharacterHasStamina();
+	if (!bHasStamina) {
+		UE_LOG(MovementLog, Display, TEXT("Not enough Stamina for run action"));
+	}
+
+	return bHasStamina;
 }
 
 

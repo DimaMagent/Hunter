@@ -6,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HCharacterMovementComponent.generated.h"
 
+class AHBaseCharacter;
+
 UENUM(BlueprintType)
 enum class ELocomotionMode : uint8
 {
@@ -34,6 +36,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = "0"))
 	float MaxWalkModeSpeed = 350.0f;
 
@@ -43,10 +47,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (ClampMin = "0", ClampMax = "1.0"))
 	float RunSideThreshold = 0.8f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (ClampMin = "0"))
+	float RunCostPerSecond = 1.0f;
+
 	ELocomotionMode CurrentLocomotionMode = ELocomotionMode::WalkMode;
 	/*¬ будущем при росте количества возможных ELocomotionMode стоит создать ассоциатвный массив*/
 private:
 	bool CanRun() const;
+
+	bool IsOwnerHasStamina() const;
+
+	UPROPERTY()
+	TObjectPtr<AHBaseCharacter> CachedCharacter;
 
 	float RunSideLimit = 0.8f;
 };

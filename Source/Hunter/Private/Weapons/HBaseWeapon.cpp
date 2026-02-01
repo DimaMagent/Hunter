@@ -3,7 +3,7 @@
 
 #include "Weapons/HBaseWeapon.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/HHealthComponent.h"
+#include "HBaseCharacter.h"
 
 AHBaseWeapon::AHBaseWeapon()
 {
@@ -38,10 +38,10 @@ void AHBaseWeapon::OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,
 
 	if (OtherActor == GetOwner()) { return; }
 
-	UHHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHHealthComponent>();
-	if (!HealthComponent) { return; }
+	AHBaseCharacter* OtherCharacter = Cast<AHBaseCharacter>(OtherActor);
+	if (!OtherCharacter) { return; }
 
-	HealthComponent->TakeDamage(CurrentDamage);
+	OtherCharacter->TakeDamage(CurrentDamage);
 }
 void AHBaseWeapon::AttackDataHandle(EAttackIntent AttackIntent) {
 	if (!ensure(WeaponAttack.Contains(AttackIntent))) { return; }
