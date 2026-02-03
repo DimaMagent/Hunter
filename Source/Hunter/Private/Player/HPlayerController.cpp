@@ -5,7 +5,9 @@
 #include "HBaseCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 #include "Types/CombatTypes.h"
+#include "UI/HGameUserWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(ControllerLog, All, All)
 
@@ -13,6 +15,7 @@ DEFINE_LOG_CATEGORY_STATIC(ControllerLog, All, All)
 void AHPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
+
 	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent)) {
 		EnhancedInput->BindAction(AdventureModeActions.MoveAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnMove);
 		EnhancedInput->BindAction(AdventureModeActions.LookAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnLookAround);
@@ -29,6 +32,12 @@ void AHPlayerController::BeginPlay()
 	CachedCharacter = Cast<AHBaseCharacter>(GetCharacter());
 	PlayerCameraManager->ViewPitchMin = ViewPitchMin;
 	PlayerCameraManager->ViewPitchMax = ViewPitchMax;
+	
+	if (GameplayUserWidgetClass && CachedCharacter) {
+		GameplayUserWidget = CreateWidget<UHGameUserWidget>(this, GameplayUserWidgetClass);
+		GameplayUserWidget->InitWidgetPawnOwner(CachedCharacter);
+		GameplayUserWidget->AddToViewport();
+	}
 }
 
 void AHPlayerController::OnPossess(APawn* PawnToPossess) {

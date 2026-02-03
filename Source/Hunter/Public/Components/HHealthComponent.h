@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HHealthComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, NewCurrentHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, NewHealth);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HUNTER_API UHHealthComponent : public UActorComponent
@@ -18,7 +18,10 @@ public:
 
 	UHHealthComponent();
 	float GetHealth() const { return CurrentHealth; }
+
 	void TakeDamage(float DamageAmount);
+
+	float GetHealthPercent() const { return CurrentHealth / MaxHealth; }
 
 	bool IsHasHealth() const { return CurrentHealth > 0; }
 

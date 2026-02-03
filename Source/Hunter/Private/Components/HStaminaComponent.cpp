@@ -21,6 +21,7 @@ void UHStaminaComponent::ChangeStamina(float Count)
 	if (FMath::IsNearlyZero(CurrentStamina)) {
 		TrySettingStaminaRecoveryPenalty();
 	}
+	OnStaminaChanged.Broadcast(CurrentStamina);
 }
 
 

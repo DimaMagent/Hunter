@@ -10,6 +10,7 @@
 class UInputAction;
 class AHBaseCharacter;
 class UInputMappingContext;
+class UHGameUserWidget;
 struct FInputActionInstance;
 
 USTRUCT(BlueprintType)
@@ -78,6 +79,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	FAdventureModeAction AdventureModeActions;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UHGameUserWidget> GameplayUserWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UHGameUserWidget> GameplayUserWidget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMin = 315.0f;

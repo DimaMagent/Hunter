@@ -19,6 +19,7 @@ class UHAnimInstanceBase;
 class UHStaminaComponent;
 
 
+
 /*
 явл€етс€ классом дл€ игрока, пока нет других character
 */
@@ -43,7 +44,7 @@ public:
 	virtual void PlayAttackAnim(UAnimMontage* AttackAnimMontage);
 	void PlayComboStep(FName StepName) const;
 	void ChangeStamina(float Count);
-	void TakeDamage(float Count);
+	void ReceiveDamage(float Count);
 	bool IsAnyAnimMontageActive() const { return bIsAnimMontageActive; }
 	bool IsCharacterAlive() const;
 	bool IsCharacterHasStamina() const;

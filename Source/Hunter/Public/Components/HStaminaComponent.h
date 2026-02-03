@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HStaminaComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, float, NewStamina);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HUNTER_API UHStaminaComponent : public UActorComponent
@@ -15,7 +16,11 @@ class HUNTER_API UHStaminaComponent : public UActorComponent
 public:	
 	UHStaminaComponent();
 
+	FOnStaminaChanged OnStaminaChanged;
+
 	void ChangeStamina(float Count);
+
+	float GetStaminaPercent() const { return CurrentStamina / MaxStamina; }
 
 	bool IsHasStamina() const { return CurrentStamina > 0; }
 

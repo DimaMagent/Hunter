@@ -41,7 +41,7 @@ void AHBaseWeapon::OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,
 	AHBaseCharacter* OtherCharacter = Cast<AHBaseCharacter>(OtherActor);
 	if (!OtherCharacter) { return; }
 
-	OtherCharacter->TakeDamage(CurrentDamage);
+	OtherCharacter->ReceiveDamage(CurrentDamage);
 }
 void AHBaseWeapon::AttackDataHandle(EAttackIntent AttackIntent) {
 	if (!ensure(WeaponAttack.Contains(AttackIntent))) { return; }

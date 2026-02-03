@@ -80,7 +80,7 @@ bool UHCharacterMovementComponent::CanRun() const
 	bool bIsMovingForward = MoveForward >= 0.0f;
 	bool bIsNotMovingSideways = FMath::Abs(GetLocalMoveRight()) < RunSideLimit;
 
-	return bIsMovingForward && bIsNotMovingSideways;
+	return bIsMovingForward && bIsNotMovingSideways && IsOwnerHasStamina();
 }
 
 bool UHCharacterMovementComponent::IsOwnerHasStamina() const {

@@ -12,6 +12,7 @@
 #include "Components/HStaminaComponent.h"
 #include "Animations/HAnimInstanceBase.h"
 
+
 DEFINE_LOG_CATEGORY_STATIC(CharacterLog, All, All)
 
 AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
@@ -100,7 +101,7 @@ void AHBaseCharacter::ChangeStamina(float Count)
 	World->GetTimerManager().SetTimer(CharacterRecoveryTimer, this, &AHBaseCharacter::Recovery, RecoveryRate, true, RecoveryDelay);
 }
 
-void AHBaseCharacter::TakeDamage(float Count) {
+void AHBaseCharacter::ReceiveDamage(float Count) {
 	if (!HealthComponent) { return; }
 
 	HealthComponent->TakeDamage(Count);
