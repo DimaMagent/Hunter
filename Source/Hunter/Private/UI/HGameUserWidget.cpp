@@ -5,16 +5,14 @@
 #include "Components/HHealthComponent.h"
 #include "Components/HStaminaComponent.h"
 
-void UHGameUserWidget::UpdateCurrentHealthPercent(float NewStamina)
+void UHGameUserWidget::UpdateCurrentHealthPercent(float NewStaminaPercent)
 {
-	if (!CachedHealthComponent) { return; }
-	CachedHealthPercent = CachedHealthComponent->GetHealthPercent();
+	CachedHealthPercent = NewStaminaPercent;
 }
 
-void UHGameUserWidget::UpdateCurrentStaminaPercent(float NewHealth)
+void UHGameUserWidget::UpdateCurrentStaminaPercent(float NewHealthPercent)
 {
-	if (!CachedStaminaComponent) { return; }
-	CachedStaminaPercent = CachedStaminaComponent->GetStaminaPercent();
+	CachedStaminaPercent = NewHealthPercent;
 }
 
 void UHGameUserWidget::InitWidgetPawnOwner(APawn* NewWidgetPawnOwner)
@@ -39,6 +37,7 @@ void UHGameUserWidget::NativeConstruct()
 		}
 		if (CachedStaminaComponent) {
 			CachedStaminaComponent->OnStaminaChanged.AddDynamic(this, &UHGameUserWidget::UpdateCurrentStaminaPercent);
+			CachedStaminaComponent->OnStaminaRecoveryPenalty.AddDynamic(this, &UHGameUserWidget::OnStaminaRecoveryPenalty);
 		}
 	}
 }

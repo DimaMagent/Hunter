@@ -21,7 +21,7 @@ void UHStaminaComponent::ChangeStamina(float Count)
 	if (FMath::IsNearlyZero(CurrentStamina)) {
 		TrySettingStaminaRecoveryPenalty();
 	}
-	OnStaminaChanged.Broadcast(CurrentStamina);
+	OnStaminaChanged.Broadcast(GetStaminaPercent());
 }
 
 
@@ -53,6 +53,8 @@ void UHStaminaComponent::TrySettingStaminaRecoveryPenalty()
 	bCanStaminaRecovery = false;
 
 	World->GetTimerManager().SetTimer(StaminaRecoveryPenaltyTimer, this, &UHStaminaComponent::StaminaRecoveryPenaltyClear, StaminaRecoveryPenaltyDuration, false);
+
+	OnStaminaRecoveryPenalty.Broadcast();
 }
 
 void UHStaminaComponent::StaminaRecoveryPenaltyClear()

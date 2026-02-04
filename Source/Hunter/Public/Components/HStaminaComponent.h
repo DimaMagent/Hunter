@@ -6,7 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "HStaminaComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, float, NewStamina);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, float, NewStaminaPercent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaminaRecoveryPenalty);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HUNTER_API UHStaminaComponent : public UActorComponent
@@ -17,6 +18,8 @@ public:
 	UHStaminaComponent();
 
 	FOnStaminaChanged OnStaminaChanged;
+
+	FOnStaminaRecoveryPenalty OnStaminaRecoveryPenalty;
 
 	void ChangeStamina(float Count);
 

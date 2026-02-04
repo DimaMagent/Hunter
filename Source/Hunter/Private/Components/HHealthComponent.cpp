@@ -16,7 +16,7 @@ void UHHealthComponent::TakeDamage(float DamageAmount)
 	if (Owner) {
 		UE_LOG(LogTemp, Display, TEXT("%s: Current Health: %f"), *GetOwner()->GetName(), CurrentHealth);
 	}
-	OnHealthChanged.Broadcast(CurrentHealth);
+	OnHealthChanged.Broadcast(GetHealthPercent());
 }
 
 

@@ -57,7 +57,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	void Recovery();
+	void Recovery() const;
 
 	FTimerHandle CharacterRecoveryTimer;
 

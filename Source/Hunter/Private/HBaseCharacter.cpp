@@ -172,7 +172,7 @@ void AHBaseCharacter::BeginPlay()
 	CharacterMode = ECharacterMode::AdventureMode;
 }
 
-void AHBaseCharacter::Recovery()
+void AHBaseCharacter::Recovery() const
 {
 	OnCharacterRecovery.Broadcast();
 }
