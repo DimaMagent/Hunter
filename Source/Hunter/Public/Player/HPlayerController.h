@@ -34,13 +34,7 @@ struct FAdventureModeAction
 	TObjectPtr<UInputAction> RunAction;
 };
 
-UENUM()
-enum class EInputRestriction : int32 {
-	None = 0,
-	BlockMove = 1 << 0,
-	BlockAttack = 1 << 1,
-};
-ENUM_CLASS_FLAGS(EInputRestriction);
+
 
 /**
  * Систему с input надо переделать. 1) Определиться, нужно ли разделение inputmode. 2) Сделать систему input более расширяемой, например, добавить какой-нибудь контейнер для хранения input
@@ -50,11 +44,7 @@ class HUNTER_API AHPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	/*Any system that adds a restriction must remove it.
-	If you want to select multiple restriction, you should use  | operation*/
-	void AddRestriction(EInputRestriction Restriction) { ActiveRestrictions |= Restriction; }
 
-	void RemoveRestriction(EInputRestriction Restriction) { ActiveRestrictions &= (~Restriction); }
 protected:
 
 
@@ -92,7 +82,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMax = 30.0f;
 
-	EInputRestriction ActiveRestrictions;
+
 
 private:
 
@@ -104,5 +94,5 @@ private:
 
 	void InitializeMappingContexts();
 
-	bool HasInputRestriction(EInputRestriction Restriction) const;
+
 };

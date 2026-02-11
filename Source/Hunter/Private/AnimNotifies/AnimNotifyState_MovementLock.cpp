@@ -3,19 +3,15 @@
 
 #include "AnimNotifies/AnimNotifyState_MovementLock.h"
 #include "HBaseCharacter.h"
-#include "Player/HPlayerController.h"
 
 void UAnimNotifyState_MovementLock::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	if (!MeshComp) { return; }
 
-	const AHBaseCharacter* Character = MeshComp->GetOwner<AHBaseCharacter>();
+	AHBaseCharacter* Character = MeshComp->GetOwner<AHBaseCharacter>();
 	if (!Character) { return; }
 
-	AHPlayerController* PlayerController = Cast<AHPlayerController>(Character->GetController());
-	if (!PlayerController) { return; }
-
-	PlayerController->AddRestriction(EInputRestriction::BlockMove);
+	Character->AddRestriction(EActionRestriction::BlockMove);
 
 	UAnimInstance* AnimInstance = MeshComp->GetAnimInstance();
 
@@ -27,13 +23,10 @@ void UAnimNotifyState_MovementLock::NotifyEnd(USkeletalMeshComponent* MeshComp, 
 {
 	if (!MeshComp) { return; }
 
-	const AHBaseCharacter* Character = MeshComp->GetOwner<AHBaseCharacter>();
+	AHBaseCharacter* Character = MeshComp->GetOwner<AHBaseCharacter>();
 	if (!Character) { return; }
 
-	AHPlayerController* PlayerController = Cast<AHPlayerController>(Character->GetController());
-	if (!PlayerController) { return; }
-
-	PlayerController->RemoveRestriction(EInputRestriction::BlockMove);
+	Character->RemoveRestriction(EActionRestriction::BlockMove);
 
 	UAnimInstance* AnimInstance = MeshComp->GetAnimInstance();
 	if (!AnimInstance) { return; }

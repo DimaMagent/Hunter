@@ -29,7 +29,6 @@ void AHPlayerController::SetupInputComponent()
 void AHPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	CachedCharacter = Cast<AHBaseCharacter>(GetCharacter());
 	PlayerCameraManager->ViewPitchMin = ViewPitchMin;
 	PlayerCameraManager->ViewPitchMax = ViewPitchMax;
 	
@@ -42,13 +41,12 @@ void AHPlayerController::BeginPlay()
 
 void AHPlayerController::OnPossess(APawn* PawnToPossess) {
 	Super::OnPossess(PawnToPossess);
+	CachedCharacter = Cast<AHBaseCharacter>(PawnToPossess);
 	InitializeMappingContexts();
 }
 
 void AHPlayerController::OnMove(const FInputActionInstance& Instance)
 {
-	if (HasInputRestriction(EInputRestriction::BlockMove)) { return; }
-
 	if (!CachedCharacter) { return; }
 
 	FVector2D MoveAroundValue = Instance.GetValue().Get<FVector2D>();
@@ -65,26 +63,22 @@ void AHPlayerController::OnLookAround(const FInputActionInstance& Instance)
 
 void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 {
-	if (HasInputRestriction(EInputRestriction::BlockAttack)) { return; }
-
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
+
 	CachedCharacter->Attack(EAttackIntent::Standart);
 }
 
 void AHPlayerController::OnAlternativeAttack(const FInputActionInstance& Instance)
 {
-	if (HasInputRestriction(EInputRestriction::BlockAttack)) { return; }
-
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
+
 	CachedCharacter->Attack(EAttackIntent::Alternative);
 }
 
 void AHPlayerController::OnRunStart(const FInputActionInstance& Instance)
 {
-	if (HasInputRestriction(EInputRestriction::BlockMove)) { return; }
-
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Triggered;
 	if (!CachedCharacter && !bIsTriggered) { return; }
 
@@ -128,10 +122,7 @@ void AHPlayerController::InitializeMappingContexts()
 	Subsystem->AddMappingContext(AdventureModeMappingContext, 0);
 }
 
-bool AHPlayerController::HasInputRestriction(EInputRestriction Restriction) const
-{
-	return (ActiveRestrictions & Restriction) != EInputRestriction::None;
-}
+
 
 
 

@@ -15,9 +15,6 @@ void UHStaminaComponent::ChangeStamina(float Count)
 {
 	if (Count == 0) { return; }
 	CurrentStamina = FMath::Clamp(CurrentStamina + Count, 0.0f, MaxStamina);
-	if (GetOwner()) {
-		UE_LOG(LogTemp, Display, TEXT("%s: Current stamina: %f"), *GetOwner()->GetName(), CurrentStamina);
-	}
 	if (FMath::IsNearlyZero(CurrentStamina)) {
 		TrySettingStaminaRecoveryPenalty();
 	}

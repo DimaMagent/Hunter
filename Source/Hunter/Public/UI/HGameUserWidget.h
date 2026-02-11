@@ -9,7 +9,7 @@
 class UHHealthComponent;
 class UHStaminaComponent;
 /**
- * The widget is fully entitled to access the data it needs directly. Using the MVVM template is considered unnecessary. When changing pawn you need to call InitWidgetPawnOwner
+ *
  */
 UCLASS()
 class HUNTER_API UHGameUserWidget : public UUserWidget

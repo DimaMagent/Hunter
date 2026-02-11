@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/HUD.h"
-#include "HHUDBase.generated.h"
+#include "HBaseCharacter.h"
+#include "HAICharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HUNTER_API AHHUDBase : public AHUD
+class HUNTER_API AHAICharacter : public AHBaseCharacter
 {
 	GENERATED_BODY()
 	

@@ -38,6 +38,8 @@ AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 }
 
 void AHBaseCharacter::Move(const FVector2D MoveAroundValue) {
+	if (HasInputRestriction(EActionRestriction::BlockMove)) { return; }
+
 	AddMovementInput(GetActorForwardVector(), MoveAroundValue.X);
 	AddMovementInput(GetActorRightVector(), MoveAroundValue.Y);
 }
@@ -52,11 +54,15 @@ void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
 }
 
 void AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
+	if (HasInputRestriction(EActionRestriction::BlockAttack)) { return; }
+
 	EnsureFightMode();
 	CombatComponent->TryAttack(AttackIntent);
 }
 
 void AHBaseCharacter::RunStart() {
+	if (HasInputRestriction(EActionRestriction::BlockMove)) { return; }
+
 	CachedMovementComponent->RunStart();
 }
 
@@ -90,7 +96,6 @@ void AHBaseCharacter::PlayComboStep(FName StepName) const
 
 void AHBaseCharacter::ChangeStamina(float Count)
 {
-	/*Если в будущем что-либо на уровне character будет влиять на потребление выносливости, все вычисления должны будут происходить в этом методе*/
 	if (!StaminaComponent) { return; }
 
 	StaminaComponent->ChangeStamina(Count);
@@ -182,6 +187,11 @@ void AHBaseCharacter::EnsureFightMode()
 	if (CharacterMode == ECharacterMode::FightMode) { return; }
 	TryEnterFightMode();
 	
+}
+
+bool AHBaseCharacter::HasInputRestriction(EActionRestriction Restriction) const
+{
+	return (ActiveRestrictions & Restriction) != EActionRestriction::None;
 }
 
 

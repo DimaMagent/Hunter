@@ -18,10 +18,18 @@ class UHWeaponComponent;
 class UHAnimInstanceBase;
 class UHStaminaComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterModeChanged, ECharacterMode, NewMode);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterRecover);
 
+UENUM()
+enum class EActionRestriction : int32 {
+	None = 0,
+	BlockMove = 1 << 0,
+	BlockAttack = 1 << 1,
+};
+ENUM_CLASS_FLAGS(EActionRestriction);
 /*
-явл€етс€ классом дл€ игрока, пока нет других character
 */
 UCLASS()
 class HUNTER_API AHBaseCharacter : public ACharacter, public IHWeaponOwnerInterface
@@ -36,15 +44,24 @@ public:
 
 	AHBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
+	/*Any system that adds a restriction must remove it.
+If you want to select multiple restriction, you should use  | operation*/
+	void AddRestriction(EActionRestriction Restriction) { ActiveRestrictions |= Restriction; }
+
+	void RemoveRestriction(EActionRestriction Restriction) { ActiveRestrictions &= (~Restriction); }
+
 	void Move(const FVector2D MoveAroundValue);
 	void LookAround(const FVector2D LookAxisValue);
 	void Attack(EAttackIntent AttackIntent);
 	void RunStart();
 	void RunEnd();
+
 	virtual void PlayAttackAnim(UAnimMontage* AttackAnimMontage);
 	void PlayComboStep(FName StepName) const;
+
 	void ChangeStamina(float Count);
 	void ReceiveDamage(float Count);
+
 	bool IsAnyAnimMontageActive() const { return bIsAnimMontageActive; }
 	bool IsCharacterAlive() const;
 	bool IsCharacterHasStamina() const;
@@ -60,6 +77,8 @@ protected:
 	void Recovery() const;
 
 	FTimerHandle CharacterRecoveryTimer;
+
+	EActionRestriction ActiveRestrictions;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
@@ -90,15 +109,15 @@ protected:
 
 private:
 
+	bool bIsAnimMontageActive = false;
+
+	EMovementMode PreviousMovementMode;
+
 	UPROPERTY()
 	TObjectPtr<UHCharacterMovementComponent> CachedMovementComponent;
 
 	UPROPERTY()
 	TObjectPtr<UHAnimInstanceBase> CachedAnimInstance;
-
-	bool bIsAnimMontageActive = false;
-
-	EMovementMode PreviousMovementMode;
 
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -107,7 +126,10 @@ private:
 	void ChangeCharacterMode(ECharacterMode NewMode);
 	void TryEnterFightMode();
 	void UpdateLookAroundMode();
+
 	void Caching();
+
+	bool HasInputRestriction(EActionRestriction Restriction) const;
 
 
 };

@@ -10,6 +10,3 @@ enum class ECharacterMode : uint8
 	FightMode
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterModeChanged, ECharacterMode, NewMode);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterRecover);
