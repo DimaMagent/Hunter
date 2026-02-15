@@ -58,7 +58,7 @@ private:
 	int32 CurrentComboStep = 0;
 };
 
-UCLASS()
+UCLASS(Abstract)
 class HUNTER_API AHBaseWeapon : public AActor
 {
 	GENERATED_BODY()

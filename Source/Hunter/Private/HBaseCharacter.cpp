@@ -4,8 +4,6 @@
 #include "HBaseCharacter.h"
 #include "HCharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
 #include "Components/HHealthComponent.h"
 #include "Components/HCombatComponent.h"
 #include "Components/HWeaponComponent.h"
@@ -18,12 +16,6 @@ DEFINE_LOG_CATEGORY_STATIC(CharacterLog, All, All)
 AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UHCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-	SpringArmComponent->SetupAttachment(GetRootComponent());
-	SpringArmComponent->bUsePawnControlRotation = true;
-
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	HealthComponent = CreateDefaultSubobject<UHHealthComponent>("HealthComponent");
 
@@ -135,15 +127,9 @@ void AHBaseCharacter::ChangeCharacterMode(ECharacterMode NewMode)
 
 void AHBaseCharacter::TryEnterFightMode()
 {
-	/*«десь должны быть проверки на возможность перейти в fightmode*/
 	ChangeCharacterMode(ECharacterMode::FightMode);
 }
 
-void AHBaseCharacter::UpdateLookAroundMode()
-{
-	/*≈сли потребуетс€, можно позже добавить проверку на возможность UpdateLookAroundMode*/
-	bUseControllerRotationYaw = !GetLastMovementInputVector().IsNearlyZero();
-}
 
 void AHBaseCharacter::Caching()
 {
@@ -192,6 +178,11 @@ void AHBaseCharacter::EnsureFightMode()
 bool AHBaseCharacter::HasInputRestriction(EActionRestriction Restriction) const
 {
 	return (ActiveRestrictions & Restriction) != EActionRestriction::None;
+}
+
+void AHBaseCharacter::UpdateLookAroundMode()
+{
+	bUseControllerRotationYaw = !GetLastMovementInputVector().IsNearlyZero();
 }
 
 

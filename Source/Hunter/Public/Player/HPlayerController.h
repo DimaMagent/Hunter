@@ -43,10 +43,8 @@ UCLASS()
 class HUNTER_API AHPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-public:
 
 protected:
-
 
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;

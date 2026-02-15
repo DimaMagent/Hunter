@@ -31,7 +31,7 @@ enum class EActionRestriction : int32 {
 ENUM_CLASS_FLAGS(EActionRestriction);
 /*
 */
-UCLASS()
+UCLASS(Abstract)
 class HUNTER_API AHBaseCharacter : public ACharacter, public IHWeaponOwnerInterface
 {
 	GENERATED_BODY()
@@ -74,17 +74,28 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	void Recovery() const;
+	virtual void Recovery() const;
+
+	void EnsureFightMode();
+	void ChangeCharacterMode(ECharacterMode NewMode);
+	void TryEnterFightMode();
+
+	void UpdateLookAroundMode();
+
+	void Caching();
+
+	bool HasInputRestriction(EActionRestriction Restriction) const;
+
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	EMovementMode PreviousMovementMode;
+
+	bool bIsAnimMontageActive = false;
 
 	FTimerHandle CharacterRecoveryTimer;
 
 	EActionRestriction ActiveRestrictions;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<USpringArmComponent> SpringArmComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UCameraComponent> CameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UHHealthComponent> HealthComponent;
@@ -107,29 +118,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mode")
 	ECharacterMode CharacterMode;
 
-private:
-
-	bool bIsAnimMontageActive = false;
-
-	EMovementMode PreviousMovementMode;
-
 	UPROPERTY()
 	TObjectPtr<UHCharacterMovementComponent> CachedMovementComponent;
 
 	UPROPERTY()
 	TObjectPtr<UHAnimInstanceBase> CachedAnimInstance;
-
-	UFUNCTION()
-	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
-	void EnsureFightMode();
-	void ChangeCharacterMode(ECharacterMode NewMode);
-	void TryEnterFightMode();
-	void UpdateLookAroundMode();
-
-	void Caching();
-
-	bool HasInputRestriction(EActionRestriction Restriction) const;
-
 
 };

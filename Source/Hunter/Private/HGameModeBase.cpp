@@ -2,12 +2,11 @@
 
 
 #include "HGameModeBase.h"
-#include "HBaseCharacter.h"
-#include "HCharacterMovementComponent.h"
+#include "Player/HPlayerCharacter.h"
 #include "Player/HPlayerController.h"
 
 AHGameModeBase::AHGameModeBase()
 {
-	DefaultPawnClass = AHBaseCharacter::StaticClass();
+	DefaultPawnClass = AHPlayerCharacter::StaticClass();
 	PlayerControllerClass = AHPlayerController::StaticClass();
 }
