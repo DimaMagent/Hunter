@@ -74,7 +74,7 @@ public:
 
 	void NextComboDataHandle(bool IsComboInputBuffered);
 
-	void Notify_OnComboEnd();
+	void OnComboEnded();
 
 	UAnimMontage* GetCurrentComboAnim(EAttackIntent AttackIntent) const;
 

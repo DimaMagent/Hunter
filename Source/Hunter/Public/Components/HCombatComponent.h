@@ -10,21 +10,31 @@
 class AHBaseCharacter;
 class UHWeaponComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackInterrupted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackEnded);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HUNTER_API UHCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UHCombatComponent();
 	void TryAttack(EAttackIntent AttackIntent);
+
 	void Notify_OnAttackWindowBegin();
 	void Notify_OnAttackWindowEnd();
 
 	void Notify_OnComboWindowBegin();
 	void Notify_OnComboWindowEnd();
-	
-	void Notify_OnEndCombo();
+
+	void Notify_OnAttackEnded() const;
+	void Notify_OnComboEnded() const;
+
+	FOnAttackStart OnAttackStart;
+	FOnAttackInterrupted OnAttackInterrupted;
+	FOnAttackEnded OnAttackEnded;
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,6 +48,11 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UHWeaponComponent> CachedWeaponComponent;
+
+	UFUNCTION()
+	void HandleInterruptRequest();
+
+	void OnComboEnded() const;
 
 	bool CanAttack() const;
 	bool IsAttackInProgress() const;

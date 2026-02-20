@@ -33,6 +33,20 @@ float UHCharacterMovementComponent::GetLocalMoveForward() const
 
 }
 
+void UHCharacterMovementComponent::DisableMovement()
+{
+	RunEnd();
+
+	PreviousMovementMode = MovementMode;
+
+	Super::DisableMovement();
+}
+
+void UHCharacterMovementComponent::EnableMovement()
+{
+	MovementMode = PreviousMovementMode;
+}
+
 void UHCharacterMovementComponent::RunStart()
 {
 	if (CurrentLocomotionMode == ELocomotionMode::RunMode) { return; }

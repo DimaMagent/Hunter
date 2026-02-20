@@ -10,6 +10,9 @@
 
 class AHBaseWeapon;
 class AHBaseCharacter;
+class UHCombatComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTryAttackInterrupt);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HUNTER_API UHWeaponComponent : public UActorComponent
@@ -21,15 +24,15 @@ public:
 
 	void BeginAttack(EAttackIntent CurrentAttackIntent) const;
 
-	void TryBeginAttack(EAttackIntent CurrentAttackIntent) const;
-
 	void ContinueCombo(bool IsComboInputBuffered);
 
-	void Notify_OnComboEnd();
+	void OnComboEnded();
 
 	EMoveSet GetMoveSet() const;
 
 	void SetWeaponCollisionMode(ECollisionResponse NewMode);
+
+	FOnTryAttackInterrupt OnTryAttackInterrupt;
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,5 +46,6 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AHBaseCharacter> CachedOwner;
+
 		
 };

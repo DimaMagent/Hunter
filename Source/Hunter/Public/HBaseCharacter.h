@@ -50,13 +50,15 @@ If you want to select multiple restriction, you should use  | operation*/
 
 	void RemoveRestriction(EActionRestriction Restriction) { ActiveRestrictions &= (~Restriction); }
 
+	UHCombatComponent* GetCombatComponent() const { return CombatComponent; }
+
 	void Move(const FVector2D MoveAroundValue);
 	void LookAround(const FVector2D LookAxisValue);
 	void Attack(EAttackIntent AttackIntent);
 	void RunStart();
 	void RunEnd();
 
-	virtual void PlayAttackAnim(UAnimMontage* AttackAnimMontage);
+	virtual bool PlayAttackAnim(UAnimMontage* AttackAnimMontage);
 	void PlayComboStep(FName StepName) const;
 
 	void ChangeStamina(float Count);

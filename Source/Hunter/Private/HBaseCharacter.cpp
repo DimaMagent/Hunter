@@ -63,18 +63,23 @@ void AHBaseCharacter::RunEnd() {
 }
 
 
-void AHBaseCharacter::PlayAttackAnim(UAnimMontage* AttackAnimMontage)
+bool AHBaseCharacter::PlayAttackAnim(UAnimMontage* AttackAnimMontage)
 { 
 
-	if (!AttackAnimMontage) { return; }
+	if (!AttackAnimMontage) { return false; }
 
-	if (!CachedAnimInstance) { return; }
+	if (!CachedAnimInstance) { return false; }
 
-	CachedAnimInstance->Montage_Play(AttackAnimMontage);
+	float MontageDuration =  CachedAnimInstance->Montage_Play(AttackAnimMontage);
+
+	if (FMath::IsNearlyEqual(MontageDuration, 0.0f)) {
+		UE_LOG(CharacterLog, Warning, TEXT("Failed to play attack anim montage"));
+		return false;
+	}
 
 	bIsAnimMontageActive = true;
 
-	UE_LOG(CharacterLog, Display, TEXT("Play attack anim montage"));
+	return true;
 }
 
 void AHBaseCharacter::PlayComboStep(FName StepName) const

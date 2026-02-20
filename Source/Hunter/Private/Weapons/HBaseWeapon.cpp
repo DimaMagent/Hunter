@@ -63,7 +63,7 @@ void AHBaseWeapon::NextComboDataHandle(bool IsComboInputBuffered) {
 	AttackDataHandle(LastAttackIntent);
 }
 
-void AHBaseWeapon::Notify_OnComboEnd() {
+void AHBaseWeapon::OnComboEnded() {
 	WeaponAttack[LastAttackIntent].ClearCombo();
 }
 

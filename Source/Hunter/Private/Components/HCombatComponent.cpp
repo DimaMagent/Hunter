@@ -21,6 +21,8 @@ void UHCombatComponent::TryAttack(EAttackIntent AttackIntent)
 
 	if (!CachedWeaponComponent) { return; }
 
+	OnAttackStart.Broadcast();
+
 	if (IsAttackInProgress()) {
 		if (bComboInputAllowed) {
 			bComboInputBuffered = true;
@@ -59,9 +61,14 @@ void UHCombatComponent::Notify_OnComboWindowEnd()
 	CachedWeaponComponent->ContinueCombo(bComboInputBuffered);
 }
 
-void UHCombatComponent::Notify_OnEndCombo()
+void UHCombatComponent::Notify_OnAttackEnded() const
 {
-	CachedWeaponComponent->Notify_OnComboEnd();
+	OnAttackEnded.Broadcast();
+}
+
+void UHCombatComponent::Notify_OnComboEnded() const
+{
+	OnComboEnded();
 }
 
 
@@ -74,6 +81,22 @@ void UHCombatComponent::BeginPlay()
 		CachedWeaponComponent = IHWeaponOwnerInterface::Execute_GetWeaponComponent(CachedCharacter);
 	}
 	ensure(CachedWeaponComponent);
+
+	if (CachedWeaponComponent) {
+		CachedWeaponComponent->OnTryAttackInterrupt.AddDynamic(this, &UHCombatComponent::HandleInterruptRequest);
+	}
+}
+
+void UHCombatComponent::HandleInterruptRequest()
+{
+	OnComboEnded();
+	OnAttackInterrupted.Broadcast();
+}
+
+void UHCombatComponent::OnComboEnded() const
+{
+	if (!CachedWeaponComponent) { return; }
+	CachedWeaponComponent->OnComboEnded();
 }
 
 bool UHCombatComponent::CanAttack() const

@@ -26,12 +26,11 @@ void UHWeaponComponent::BeginAttack(EAttackIntent CurrentAttackIntent) const
 
 	CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost());
 
-	CachedOwner->PlayAttackAnim(AttackAnim);
-}
+	bool bIsPlayAttackAnimSucceeded = CachedOwner->PlayAttackAnim(AttackAnim);
 
-void UHWeaponComponent::TryBeginAttack(EAttackIntent CurrentAttackIntent) const
-{
-	if (!CurrentWeapon) { return; }
+	if (!bIsPlayAttackAnimSucceeded) {
+		OnTryAttackInterrupt.Broadcast();
+	}
 }
 
 void UHWeaponComponent::ContinueCombo(bool IsComboInputBuffered) {
@@ -49,9 +48,9 @@ void UHWeaponComponent::ContinueCombo(bool IsComboInputBuffered) {
 	CachedOwner->PlayComboStep(CurrentStepName);
 }
 
-void UHWeaponComponent::Notify_OnComboEnd()
+void UHWeaponComponent::OnComboEnded()
 {
-	CurrentWeapon->Notify_OnComboEnd();
+	CurrentWeapon->OnComboEnded();
 }
 
 

@@ -31,6 +31,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	ELocomotionMode GetCurrentLocomotionMode() const { return CurrentLocomotionMode; }
 
+	virtual void DisableMovement() override;
+
+	virtual void EnableMovement();
+
 	void RunStart();
 	void RunEnd();
 protected:
@@ -61,4 +65,6 @@ private:
 	TObjectPtr<AHBaseCharacter> CachedCharacter;
 
 	float RunSideLimit = 0.8f;
+
+	EMovementMode PreviousMovementMode;
 };
