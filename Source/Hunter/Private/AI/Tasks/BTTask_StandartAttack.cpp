@@ -22,7 +22,7 @@ EBTNodeResult::Type UBTTask_StandartAttack::ExecuteTask(UBehaviorTreeComponent& 
 
 	AHEnemyAIController* Controller = Cast<AHEnemyAIController>(OwnerComp.GetAIOwner());
 
-	if (!Controller) { return EBTNodeResult::Failed; }
+	if (!Controller) {return EBTNodeResult::Failed; }
 
 	AHBaseCharacter* Character = Controller->GetPawn<AHBaseCharacter>();
 
@@ -36,16 +36,17 @@ EBTNodeResult::Type UBTTask_StandartAttack::ExecuteTask(UBehaviorTreeComponent& 
 
 	if (!MovementComp) { return EBTNodeResult::Failed; }
 
-	CachedCombatComponent->OnAttackEnded.AddUniqueDynamic(this, &UBTTask_StandartAttack::OnAttackEnded);
-	CachedCombatComponent->OnAttackInterrupted.AddUniqueDynamic(this, &UBTTask_StandartAttack::OnAttackEnded);
+	CachedCombatComponent->OnAttackInterrupted.AddUniqueDynamic(this, &UBTTask_StandartAttack::OnAttackInterrupted);
 
-	Controller->StopMovement();
+	bool bIsAttackStarted = Controller->OnAttack();
 
-	MovementComp->DisableMovement();
-
-	Controller->OnAttack();
-
-	MovementComp->EnableMovement();
+	if (bIsAttackStarted) {
+		CachedCombatComponent->OnAttackEnded.AddUniqueDynamic(this, &UBTTask_StandartAttack::OnAttackEnded);
+	}
+	else {
+		UE_LOG(LogTemp, Display, TEXT("UBTTask_StandartAttack::ExecuteTask: OnAttack returned false, attack is not started"));
+		return EBTNodeResult::Failed;
+	}
 
 	return EBTNodeResult::InProgress;
 }
@@ -53,7 +54,6 @@ EBTNodeResult::Type UBTTask_StandartAttack::ExecuteTask(UBehaviorTreeComponent& 
 void UBTTask_StandartAttack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 	UE_LOG(LogTemp, Display, TEXT("UBTTask_StandartAttack::OnTaskFinished was called"));
-	UE_LOG(LogTemp, Display, TEXT("UBTTask_StandartAttack::OnTaskFinished: OwnerComp %s"), *OwnerComp.GetName());
 	if (CachedCombatComponent) {
 		CachedCombatComponent->OnAttackEnded.RemoveAll(this);
 		CachedCombatComponent->OnAttackInterrupted.RemoveAll(this);
@@ -68,7 +68,13 @@ void UBTTask_StandartAttack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, u
 
 void UBTTask_StandartAttack::OnAttackEnded() {
 	UE_LOG(LogTemp, Display, TEXT("UBTTask_StandartAttack::OnAttackEnded was called"));
-	UE_LOG(LogTemp, Display, TEXT("UBTTask_StandartAttack::OnAttackEnded: CachedOwnerComp %s"), *CachedOwnerComp->GetName());
 	if (!CachedOwnerComp) { return; }
 	FinishLatentTask(*CachedOwnerComp, EBTNodeResult::Succeeded);
+}
+
+void UBTTask_StandartAttack::OnAttackInterrupted()
+{
+	UE_LOG(LogTemp, Display, TEXT("UBTTask_StandartAttack::OnAttackInterrupted was called"));
+	if (!CachedOwnerComp) { return; }
+	FinishLatentTask(*CachedOwnerComp, EBTNodeResult::Failed);
 }

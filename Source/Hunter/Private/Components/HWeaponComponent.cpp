@@ -26,7 +26,7 @@ void UHWeaponComponent::BeginAttack(EAttackIntent CurrentAttackIntent) const
 
 	CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost());
 
-	bool bIsPlayAttackAnimSucceeded = CachedOwner->PlayAttackAnim(AttackAnim);
+	bool bIsPlayAttackAnimSucceeded = CachedOwner->PlayAnim(AttackAnim);
 
 	if (!bIsPlayAttackAnimSucceeded) {
 		OnTryAttackInterrupt.Broadcast();

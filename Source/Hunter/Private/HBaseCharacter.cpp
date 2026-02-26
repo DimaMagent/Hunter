@@ -45,11 +45,13 @@ void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
 
 }
 
-void AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
-	if (HasInputRestriction(EActionRestriction::BlockAttack)) { return; }
+bool AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
+
+	if (!CombatComponent) { return false; }
 
 	EnsureFightMode();
-	CombatComponent->TryAttack(AttackIntent);
+
+	return CombatComponent->TryAttack(AttackIntent);;
 }
 
 void AHBaseCharacter::RunStart() {
@@ -63,17 +65,21 @@ void AHBaseCharacter::RunEnd() {
 }
 
 
-bool AHBaseCharacter::PlayAttackAnim(UAnimMontage* AttackAnimMontage)
+bool AHBaseCharacter::PlayAnim(UAnimMontage* AnimMontage)
 { 
+	if (bIsAnimMontageActive) { 
+		UE_LOG(CharacterLog, Warning, TEXT("Failed to play anim montage because anim montage is already playing "));
+		return false; }
 
-	if (!AttackAnimMontage) { return false; }
+	if (!AnimMontage) { return false; }
 
 	if (!CachedAnimInstance) { return false; }
-
-	float MontageDuration =  CachedAnimInstance->Montage_Play(AttackAnimMontage);
+	
+	float MontageDuration =  CachedAnimInstance->Montage_Play(AnimMontage);
 
 	if (FMath::IsNearlyEqual(MontageDuration, 0.0f)) {
-		UE_LOG(CharacterLog, Warning, TEXT("Failed to play attack anim montage"));
+		UE_LOG(CharacterLog, Warning, TEXT("Failed to play anim montage"));
+		bIsAnimMontageActive = false;
 		return false;
 	}
 
@@ -88,7 +94,7 @@ void AHBaseCharacter::PlayComboStep(FName StepName) const
 
 	CachedAnimInstance->Montage_JumpToSection(StepName);
 
-	UE_LOG(CharacterLog, Display, TEXT("Plat next combo step"));
+	UE_LOG(CharacterLog, Display, TEXT("Play next combo step"));
 }
 
 void AHBaseCharacter::ChangeStamina(float Count)
@@ -149,7 +155,7 @@ void AHBaseCharacter::Caching()
 void AHBaseCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	bIsAnimMontageActive = false;
-	UE_LOG(CharacterLog, Display, TEXT("Play attack anim montage end"));
+	UE_LOG(CharacterLog, Display, TEXT("Play anim montage ended"));
 }
 
 

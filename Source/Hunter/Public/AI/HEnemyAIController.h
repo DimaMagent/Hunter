@@ -29,10 +29,10 @@ public:
 	AHBaseCharacter* GetControlledCharacter() const { return CachedCharacter; }
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-	void OnAttack() const;
+	bool OnAttack() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-	void OnAlternativeAttack() const;
+	bool OnAlternativeAttack() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void OnRunStart() const;

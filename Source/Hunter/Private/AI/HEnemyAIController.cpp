@@ -30,16 +30,18 @@ void AHEnemyAIController::OnPossess(APawn* PawnToPossess)
 	CachedCharacter = Cast<AHBaseCharacter>(PawnToPossess);
 }
 
-void AHEnemyAIController::OnAttack() const
+bool AHEnemyAIController::OnAttack() const
 {
-	if (!CachedCharacter) { return; }
-	CachedCharacter->Attack(EAttackIntent::Standart);
+	if (!CachedCharacter) { return false; }
+
+	return CachedCharacter->Attack(EAttackIntent::Standart);
 }
 
-void AHEnemyAIController::OnAlternativeAttack() const
+bool AHEnemyAIController::OnAlternativeAttack() const
 {
-	if (!CachedCharacter) { return; }
-	CachedCharacter->Attack(EAttackIntent::Alternative);
+	if (!CachedCharacter) { return false; }
+
+	return CachedCharacter->Attack(EAttackIntent::Alternative);
 }
 
 void AHEnemyAIController::OnRunStart() const

@@ -15,11 +15,9 @@ UHCombatComponent::UHCombatComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UHCombatComponent::TryAttack(EAttackIntent AttackIntent)
+bool UHCombatComponent::TryAttack(EAttackIntent AttackIntent)
 {
-	if (!CanAttack()) { return; }
-
-	if (!CachedWeaponComponent) { return; }
+	if (!CanAttack()) { return false; }
 
 	OnAttackStart.Broadcast();
 
@@ -31,6 +29,7 @@ void UHCombatComponent::TryAttack(EAttackIntent AttackIntent)
 	else {
 		CachedWeaponComponent->BeginAttack(AttackIntent);
 	}
+	return true;
 }
 
 void UHCombatComponent::Notify_OnAttackWindowBegin()
@@ -101,7 +100,7 @@ void UHCombatComponent::OnComboEnded() const
 
 bool UHCombatComponent::CanAttack() const
 {
-	return IsOwnerAlive() && IsOwnerHasStamina();
+	return IsOwnerAlive() && IsOwnerHasStamina() && CachedWeaponComponent && !CachedCharacter->HasInputRestriction(EActionRestriction::BlockAttack);
 }
 
 bool UHCombatComponent::IsAttackInProgress() const

@@ -66,7 +66,10 @@ void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
 
-	CachedCharacter->Attack(EAttackIntent::Standart);
+	bool bIsAttackStart = CachedCharacter->Attack(EAttackIntent::Standart);
+	if (!bIsAttackStart) {
+		UE_LOG(ControllerLog, Warning, TEXT("Attack is not started"));
+	}
 }
 
 void AHPlayerController::OnAlternativeAttack(const FInputActionInstance& Instance)
@@ -74,7 +77,10 @@ void AHPlayerController::OnAlternativeAttack(const FInputActionInstance& Instanc
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
 	if (!CachedCharacter && !bIsTriggered) { return; }
 
-	CachedCharacter->Attack(EAttackIntent::Alternative);
+	bool bIsAttackStart = CachedCharacter->Attack(EAttackIntent::Alternative);
+	if (!bIsAttackStart) {
+		UE_LOG(ControllerLog, Warning, TEXT("Alternative attack is not started"));
+	}
 }
 
 void AHPlayerController::OnRunStart(const FInputActionInstance& Instance)

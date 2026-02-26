@@ -21,7 +21,7 @@ class HUNTER_API UHCombatComponent : public UActorComponent
 
 public:
 	UHCombatComponent();
-	void TryAttack(EAttackIntent AttackIntent);
+	bool TryAttack(EAttackIntent AttackIntent);
 
 	void Notify_OnAttackWindowBegin();
 	void Notify_OnAttackWindowEnd();

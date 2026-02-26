@@ -27,6 +27,9 @@ private:
 	UFUNCTION()
 	virtual void OnAttackEnded();
 
+	UFUNCTION()
+	virtual void OnAttackInterrupted();
+
 	UPROPERTY()
 	TObjectPtr<UHCombatComponent> CachedCombatComponent;
 	
