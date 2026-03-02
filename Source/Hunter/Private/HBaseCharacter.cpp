@@ -9,6 +9,7 @@
 #include "Components/HWeaponComponent.h"
 #include "Components/HStaminaComponent.h"
 #include "Animations/HAnimInstanceBase.h"
+#include "Components/CapsuleComponent.h"
 
 
 DEFINE_LOG_CATEGORY_STATIC(CharacterLog, All, All)
@@ -30,7 +31,9 @@ AHBaseCharacter::AHBaseCharacter(const FObjectInitializer& ObjectInitializer):
 }
 
 void AHBaseCharacter::Move(const FVector2D MoveAroundValue) {
+	if (!IsCharacterAlive()) { return; }
 	if (HasInputRestriction(EActionRestriction::BlockMove)) { return; }
+
 
 	AddMovementInput(GetActorForwardVector(), MoveAroundValue.X);
 	AddMovementInput(GetActorRightVector(), MoveAroundValue.Y);
@@ -47,6 +50,8 @@ void AHBaseCharacter::LookAround(const FVector2D LookAxisValue) {
 
 bool AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
 
+	if (!IsCharacterAlive()) { return false; }
+
 	if (!CombatComponent) { return false; }
 
 	EnsureFightMode();
@@ -55,12 +60,16 @@ bool AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
 }
 
 void AHBaseCharacter::RunStart() {
+	if (!IsCharacterAlive()) { return; }
+
 	if (HasInputRestriction(EActionRestriction::BlockMove)) { return; }
 
 	CachedMovementComponent->RunStart();
 }
 
 void AHBaseCharacter::RunEnd() {
+	if (!IsCharacterAlive()) { return; }
+
 	CachedMovementComponent->RunEnd();
 }
 
@@ -69,7 +78,8 @@ bool AHBaseCharacter::PlayAnim(UAnimMontage* AnimMontage)
 { 
 	if (bIsAnimMontageActive) { 
 		UE_LOG(CharacterLog, Warning, TEXT("Failed to play anim montage because anim montage is already playing "));
-		return false; }
+		return false;
+	}
 
 	if (!AnimMontage) { return false; }
 
@@ -116,9 +126,7 @@ void AHBaseCharacter::ReceiveDamage(float Count) {
 }
 
 bool AHBaseCharacter::IsCharacterAlive() const {
-	if (!HealthComponent) { return false; }
-
-	return HealthComponent->IsHasHealth();
+	return !(CharacterMode == ECharacterMode::DeathMode);
 }
 
 bool AHBaseCharacter::IsCharacterHasStamina() const
@@ -152,10 +160,39 @@ void AHBaseCharacter::Caching()
 	}
 }
 
+void AHBaseCharacter::OnDeath()
+{
+	if (!ensure(DeathAnimationMontage)) { return; }
+	if (CachedMovementComponent) {
+		CachedMovementComponent->DisableMovement();
+	}
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	if (CapsuleComp) {
+		CapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	}
+	if (CachedAnimInstance) {
+		CachedAnimInstance->StopAllMontages(0.1f);
+		bIsAnimMontageActive = false;
+	}
+	SetLifeSpan(LifeSpanOnDead);
+	PlayAnim(DeathAnimationMontage);
+
+	OnCharacterDead.Broadcast();
+}
+
 void AHBaseCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	bIsAnimMontageActive = false;
 	UE_LOG(CharacterLog, Display, TEXT("Play anim montage ended"));
+}
+
+void AHBaseCharacter::OnHealthChanged(float NewHealthPercent)
+{
+	if (FMath::IsNearlyEqual(NewHealthPercent, 0.0f)) {
+		ChangeCharacterMode(ECharacterMode::DeathMode);
+		OnDeath();
+
+	}
 }
 
 
@@ -169,7 +206,12 @@ void AHBaseCharacter::BeginPlay()
 	ensure(CombatComponent);
 	ensure(WeaponComponent);
 
-	CachedAnimInstance->OnMontageBlendingOut.AddDynamic(this, &AHBaseCharacter::OnMontageEnded);
+	if (CachedAnimInstance) {
+		CachedAnimInstance->OnMontageBlendingOut.AddDynamic(this, &AHBaseCharacter::OnMontageEnded);
+	}
+	if (HealthComponent) {
+		HealthComponent->OnHealthChanged.AddDynamic(this, &AHBaseCharacter::OnHealthChanged);
+	}
 
 	CharacterMode = ECharacterMode::AdventureMode;
 }

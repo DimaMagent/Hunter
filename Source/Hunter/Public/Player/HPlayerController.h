@@ -37,7 +37,7 @@ struct FAdventureModeAction
 
 
 /**
- * Систему с input надо переделать. 1) Определиться, нужно ли разделение inputmode. 2) Сделать систему input более расширяемой, например, добавить какой-нибудь контейнер для хранения input
+ *
  */
 UCLASS()
 class HUNTER_API AHPlayerController : public APlayerController

@@ -73,6 +73,10 @@ void UHWeaponComponent::BeginPlay()
 		CurrentWeapon->SetOwner(GetOwner());
 	}
 	ensure(CurrentWeapon);
+
+	if (CachedOwner) {
+		CachedOwner->OnCharacterDead.AddDynamic(this, &UHWeaponComponent::OnCharacterDead);
+	}
 	
 }
 EMoveSet UHWeaponComponent::GetMoveSet() const {
@@ -94,5 +98,11 @@ void UHWeaponComponent::OnAttackWindowEnd()
 void UHWeaponComponent::SetWeaponCollisionMode(ECollisionResponse NewMode)
 {
 	CurrentWeapon->SetCollsionMode(NewMode);
+}
+
+void UHWeaponComponent::OnCharacterDead()
+{
+	SetWeaponCollisionMode(ECollisionResponse::ECR_Ignore);
+	CurrentWeapon->OnCharacterDead();
 }
 

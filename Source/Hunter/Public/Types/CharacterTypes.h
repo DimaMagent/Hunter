@@ -7,6 +7,7 @@ UENUM(BlueprintType)
 enum class ECharacterMode : uint8 
 {
 	AdventureMode,
-	FightMode
+	FightMode,
+	DeathMode
 };
 

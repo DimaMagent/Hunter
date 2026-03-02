@@ -23,6 +23,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void OnDeath() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UWidgetComponent> FrontHealthBarWidget;
 

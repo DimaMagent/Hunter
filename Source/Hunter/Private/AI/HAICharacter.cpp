@@ -4,6 +4,7 @@
 #include "AI/HAICharacter.h"
 #include "Components/WidgetComponent.h"
 #include "UI/HGameUserWidget.h"
+#include "AI/HEnemyAIController.h"
 
 AHAICharacter::AHAICharacter(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer)
@@ -29,5 +30,16 @@ void AHAICharacter::BeginPlay()
 		if (Widget) {
 			Widget->InitWidgetPawnOwner(this);
 		}
+	}
+}
+
+void AHAICharacter::OnDeath()
+{
+	Super::OnDeath();
+	if (FrontHealthBarWidget) {
+		FrontHealthBarWidget->SetVisibility(false);
+	}
+	if (BackHealthBarWidget) {
+		BackHealthBarWidget->SetVisibility(false);
 	}
 }

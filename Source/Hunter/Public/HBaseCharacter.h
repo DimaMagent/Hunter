@@ -17,10 +17,13 @@ class UHCombatComponent;
 class UHWeaponComponent;
 class UHAnimInstanceBase;
 class UHStaminaComponent;
+class UAnimMontage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterModeChanged, ECharacterMode, NewMode);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterRecover);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterDead);
 
 UENUM()
 enum class EActionRestriction : int32 {
@@ -41,6 +44,8 @@ public:
 	FOnCharacterModeChanged OnCharacterModeChanged;
 
 	FOnCharacterRecover OnCharacterRecovery;
+
+	FOnCharacterDead OnCharacterDead;
 
 	AHBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
@@ -88,8 +93,13 @@ protected:
 
 	void Caching();
 
+	virtual void OnDeath();
+
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UFUNCTION()
+	void OnHealthChanged(float NewHealthPercent);
 
 	EMovementMode PreviousMovementMode;
 
@@ -111,11 +121,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UHStaminaComponent> StaminaComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	TObjectPtr<UAnimMontage> DeathAnimationMontage;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recovery")
 	float RecoveryRate = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recovery")
 	float RecoveryDelay = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LifeSpan")
+	float LifeSpanOnDead = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mode")
 	ECharacterMode CharacterMode;

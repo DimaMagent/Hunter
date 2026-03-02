@@ -41,6 +41,9 @@ protected:
 
 	void SetWeaponCollisionMode(ECollisionResponse NewMode);
 
+	UFUNCTION()
+	virtual void OnCharacterDead();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<AHBaseWeapon> DefaultWeaponClass;
 

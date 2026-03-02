@@ -5,6 +5,7 @@
 #include "HBaseCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BrainComponent.h"
 
 AHEnemyAIController::AHEnemyAIController()
 {
@@ -22,12 +23,24 @@ void AHEnemyAIController::BeginPlay()
 	if (BehaviorTree) {
 		RunBehaviorTree(BehaviorTree);
 	}
+
+	if (CachedCharacter) {
+		CachedCharacter->OnCharacterDead.AddDynamic(this, &AHEnemyAIController::OnDeath);
+	}
 }
 
 void AHEnemyAIController::OnPossess(APawn* PawnToPossess)
 {
 	Super::OnPossess(PawnToPossess);
 	CachedCharacter = Cast<AHBaseCharacter>(PawnToPossess);
+}
+
+void AHEnemyAIController::OnDeath()
+{
+	UBrainComponent* BrainComp = GetBrainComponent();
+	if (BrainComp) {
+		BrainComp->StopLogic(TEXT("Character is dead"));
+	}
 }
 
 bool AHEnemyAIController::OnAttack() const

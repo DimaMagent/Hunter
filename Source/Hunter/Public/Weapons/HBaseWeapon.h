@@ -16,13 +16,13 @@ struct FAttackData {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
-	EAttackId AttackType;
+	EAttackId AttackType = EAttackId::None;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = "0"))
-	float DamageModifier;
+	float DamageModifier = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = "0"))
-	float StaminaCostModifier;
+	float StaminaCostModifier = 1.0f;
 
 };
 
@@ -42,7 +42,7 @@ struct FComboDefinition {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combo")
-	UAnimMontage* ComboMontage;
+	TObjectPtr<UAnimMontage> ComboMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combo")
 	TArray<FSteps> ComboSteps;
@@ -85,6 +85,8 @@ public:
 
 	float GetCurrentStaminaCost() const { return CurrentStaminaCost; }
 
+	void OnCharacterDead();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -101,14 +103,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	EMoveSet WeaponMoveSet = EMoveSet::Unarmed;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	TMap<EAttackIntent, FComboDefinition> WeaponAttack;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Collision")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Collision")
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "LifeSpan")
+	float LifeSpanOnDead = 5.0f;
 
 private:
 	UPROPERTY()

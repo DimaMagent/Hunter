@@ -48,7 +48,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
-	
+protected:
+	UFUNCTION()
+	void OnDeath();
+
 private:
 
 	UPROPERTY()

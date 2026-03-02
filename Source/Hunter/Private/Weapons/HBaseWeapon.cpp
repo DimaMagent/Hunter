@@ -86,3 +86,7 @@ bool AHBaseWeapon::GetCurrentStepName(FName& OutStepName) const {
 	OutStepName = WeaponAttack[LastAttackIntent].GetCurrentComboStep().MontageSectionName;
 	return true;
 }
+
+void AHBaseWeapon::OnCharacterDead() {
+	SetLifeSpan(LifeSpanOnDead);
+}
