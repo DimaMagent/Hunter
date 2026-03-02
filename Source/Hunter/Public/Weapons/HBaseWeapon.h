@@ -9,6 +9,7 @@
 
 
 class UCapsuleComponent;
+class AHBaseCharacter;
 
 USTRUCT(BlueprintType)
 struct FAttackData {
@@ -76,6 +77,8 @@ public:
 
 	void OnComboEnded();
 
+	void OnAttackWindowEnd();
+
 	UAnimMontage* GetCurrentComboAnim(EAttackIntent AttackIntent) const;
 
 	bool GetCurrentStepName(FName& OutStepName) const;
@@ -108,8 +111,13 @@ protected:
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
 
 private:
+	UPROPERTY()
+	TArray<TObjectPtr<AHBaseCharacter>> CharactersCollisionIgnored;
+
 	EAttackIntent LastAttackIntent;
+
 	float CurrentDamage = 0.0f;
+
 	float CurrentStaminaCost = 0.0f;
 
 };

@@ -36,14 +36,14 @@ void UHCombatComponent::Notify_OnAttackWindowBegin()
 {
 	if (!CachedWeaponComponent) { return; }
 
-	CachedWeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Overlap);
+	CachedWeaponComponent->OnAttackWindowBegin();
 }
 
 void UHCombatComponent::Notify_OnAttackWindowEnd()
 {
 	if (!CachedWeaponComponent) { return; }
 
-	CachedWeaponComponent->SetWeaponCollisionMode(ECollisionResponse::ECR_Ignore);
+	CachedWeaponComponent->OnAttackWindowEnd();
 }
 
 void UHCombatComponent::Notify_OnComboWindowBegin()

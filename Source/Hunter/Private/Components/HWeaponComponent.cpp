@@ -80,6 +80,17 @@ EMoveSet UHWeaponComponent::GetMoveSet() const {
 	return CurrentWeapon->GetMoveSet();
 }
 
+void UHWeaponComponent::OnAttackWindowBegin()
+{
+	SetWeaponCollisionMode(ECollisionResponse::ECR_Overlap);
+}
+
+void UHWeaponComponent::OnAttackWindowEnd()
+{
+	SetWeaponCollisionMode(ECollisionResponse::ECR_Ignore);
+	CurrentWeapon->OnAttackWindowEnd();
+}
+
 void UHWeaponComponent::SetWeaponCollisionMode(ECollisionResponse NewMode)
 {
 	CurrentWeapon->SetCollsionMode(NewMode);

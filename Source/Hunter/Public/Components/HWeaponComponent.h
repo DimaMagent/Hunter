@@ -30,12 +30,16 @@ public:
 
 	EMoveSet GetMoveSet() const;
 
-	void SetWeaponCollisionMode(ECollisionResponse NewMode);
+	void OnAttackWindowBegin();
+
+	void OnAttackWindowEnd();
 
 	FOnTryAttackInterrupt OnTryAttackInterrupt;
 
 protected:
 	virtual void BeginPlay() override;
+
+	void SetWeaponCollisionMode(ECollisionResponse NewMode);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<AHBaseWeapon> DefaultWeaponClass;

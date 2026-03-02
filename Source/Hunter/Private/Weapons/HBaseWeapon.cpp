@@ -41,6 +41,9 @@ void AHBaseWeapon::OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,
 	AHBaseCharacter* OtherCharacter = Cast<AHBaseCharacter>(OtherActor);
 	if (!OtherCharacter) { return; }
 
+	if (CharactersCollisionIgnored.Contains(OtherCharacter)) { return; }
+
+	CharactersCollisionIgnored.AddUnique(OtherCharacter);
 	OtherCharacter->ReceiveDamage(CurrentDamage);
 }
 void AHBaseWeapon::AttackDataHandle(EAttackIntent AttackIntent) {
@@ -54,6 +57,10 @@ void AHBaseWeapon::AttackDataHandle(EAttackIntent AttackIntent) {
 void AHBaseWeapon::SetCollsionMode(ECollisionResponse NewMode)
 {
 	CapsuleComponent->SetCollisionResponseToAllChannels(NewMode);
+}
+
+void AHBaseWeapon::OnAttackWindowEnd() {
+	CharactersCollisionIgnored.Empty();
 }
 
 void AHBaseWeapon::NextComboDataHandle(bool IsComboInputBuffered) {
