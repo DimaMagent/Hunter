@@ -32,11 +32,22 @@ void AHPlayerController::BeginPlay()
 	Super::BeginPlay();
 	PlayerCameraManager->ViewPitchMin = ViewPitchMin;
 	PlayerCameraManager->ViewPitchMax = ViewPitchMax;
+
+	if (CachedCharacter) {
+		CachedCharacter->OnCharacterDead.AddDynamic(this, &AHPlayerController::OnCharacterDead);
+	}
 	
 	if (GameplayUserWidgetClass && CachedCharacter) {
 		GameplayUserWidget = CreateWidget<UHGameUserWidget>(this, GameplayUserWidgetClass);
 		GameplayUserWidget->InitWidgetPawnOwner(CachedCharacter);
 		GameplayUserWidget->AddToViewport();
+	}
+	if (DeadUserWidgetClass) {
+		OnDeadUserWidget = CreateWidget<UUserWidget>(this, DeadUserWidgetClass);
+		UE_LOG(ControllerLog, Error, TEXT("AHPlayerController::OnCharacterDead: OnDeadUserWidget must be Valid now"));
+	}
+	else {
+		UE_LOG(ControllerLog, Error, TEXT("AHPlayerController::BeginPlay: DeadUserWidgetClass is not Valid"));
 	}
 }
 
@@ -111,13 +122,24 @@ void AHPlayerController::OnRunEnd(const FInputActionInstance& Instance)
 	CachedCharacter->RunEnd();
 }
 
+void AHPlayerController::OnCharacterDead() {
+	if (!OnDeadUserWidget) { UE_LOG(ControllerLog, Error, TEXT("AHPlayerController::OnCharacterDead: OnDeadUserWidget is not Valid"));  return; }
+
+	if (GameplayUserWidget) {
+		GameplayUserWidget->RemoveFromViewport();
+	}
+
+	OnDeadUserWidget->AddToViewport();
+}
+
 bool AHPlayerController::ValidateInputActions() const
 {
 	bool bIsValidAdventureModeActions = ensureMsgf(AdventureModeActions.MoveAction, TEXT("MoveAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.LookAction, TEXT("LookAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.AttackAction, TEXT("AttackAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.AlternativeAttackAction, TEXT("AlternativeAttackAction is not set on %s"), *GetName()) &&
-		ensureMsgf(AdventureModeActions.RunAction, TEXT("RunAction is not set on %s"), *GetName());;
+		ensureMsgf(AdventureModeActions.RunAction, TEXT("RunAction is not set on %s"), *GetName()) &&
+		ensureMsgf(AdventureModeActions.ParryingAction, TEXT("ParryingAction is not set on %s"), *GetName());
 	return bIsValidAdventureModeActions;
 }
 

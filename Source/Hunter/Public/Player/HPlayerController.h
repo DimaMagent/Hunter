@@ -67,6 +67,9 @@ protected:
 
 	void OnRunEnd(const FInputActionInstance& Instance);
 
+	UFUNCTION()
+	virtual void OnCharacterDead();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> AdventureModeMappingContext;
 
@@ -76,16 +79,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UHGameUserWidget> GameplayUserWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> DeadUserWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<UHGameUserWidget> GameplayUserWidget;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> OnDeadUserWidget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMin = 315.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMax = 30.0f;
-
-
 
 private:
 
