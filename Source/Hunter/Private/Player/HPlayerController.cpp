@@ -23,6 +23,7 @@ void AHPlayerController::SetupInputComponent()
 		EnhancedInput->BindAction(AdventureModeActions.AlternativeAttackAction, ETriggerEvent::Started, this, &AHPlayerController::OnAlternativeAttack);
 		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnRunStart);
 		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Completed, this, &AHPlayerController::OnRunEnd);
+		EnhancedInput->BindAction(AdventureModeActions.ParryingAction, ETriggerEvent::Started, this, &AHPlayerController::OnParrying);
 	}
 }
 
@@ -69,6 +70,17 @@ void AHPlayerController::OnAttack(const FInputActionInstance& Instance)
 	bool bIsAttackStart = CachedCharacter->Attack(EAttackIntent::Standart);
 	if (!bIsAttackStart) {
 		UE_LOG(ControllerLog, Warning, TEXT("Attack is not started"));
+	}
+}
+
+void AHPlayerController::OnParrying(const FInputActionInstance& Instance)
+{
+	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
+	if (!CachedCharacter && !bIsTriggered) { return; }
+
+	bool bIsParryingStart = CachedCharacter->Parrying();
+	if (!bIsParryingStart) {
+		UE_LOG(ControllerLog, Warning, TEXT("Parrying is not started"));
 	}
 }
 

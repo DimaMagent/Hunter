@@ -59,6 +59,17 @@ bool AHBaseCharacter::Attack(EAttackIntent AttackIntent) {
 	return CombatComponent->TryAttack(AttackIntent);;
 }
 
+bool AHBaseCharacter::Parrying()
+{
+	if (!IsCharacterAlive()) { return false; }
+
+	if (!CombatComponent) { return false; }
+
+	EnsureFightMode();
+
+	return CombatComponent->TryParrying();
+}
+
 void AHBaseCharacter::RunStart() {
 	if (!IsCharacterAlive()) { return; }
 
@@ -121,6 +132,7 @@ void AHBaseCharacter::ChangeStamina(float Count)
 
 void AHBaseCharacter::ReceiveDamage(float Count) {
 	if (!HealthComponent) { return; }
+	if (!bCanCharacterTakeDamage) { return; }
 
 	HealthComponent->TakeDamage(Count);
 }
@@ -133,6 +145,16 @@ bool AHBaseCharacter::IsCharacterHasStamina() const
 {
 	if (!StaminaComponent) { return false; }
 	return StaminaComponent->IsHasStamina();
+}
+
+void AHBaseCharacter::OnParryingWindowBegin()
+{
+	bCanCharacterTakeDamage = false;
+}
+
+void AHBaseCharacter::OnParryingWindowEnd()
+{
+	bCanCharacterTakeDamage = true;
 }
 
 

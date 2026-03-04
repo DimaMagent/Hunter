@@ -71,15 +71,19 @@ public:
 
 	virtual void AttackDataHandle(EAttackIntent AttackIntent);
 
+	virtual void ParryingDataHandle();
+
 	void SetCollsionMode(ECollisionResponse NewMode);
 
-	void NextComboDataHandle(bool IsComboInputBuffered);
+	virtual  void NextComboDataHandle(bool IsComboInputBuffered);
 
 	void OnComboEnded();
 
 	void OnAttackWindowEnd();
 
 	UAnimMontage* GetCurrentComboAnim(EAttackIntent AttackIntent) const;
+
+	UAnimMontage* GetParryingMontage() const { return ParryingMontage; }
 
 	bool GetCurrentStepName(FName& OutStepName) const;
 
@@ -111,6 +115,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Collision")
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Parrying")
+	TObjectPtr<UAnimMontage> ParryingMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Parrying", meta = (ClampMin = "0"))
+	float ParryingStaminaCostModifier = 1.2f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "LifeSpan")
 	float LifeSpanOnDead = 5.0f;

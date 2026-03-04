@@ -26,6 +26,8 @@ public:
 
 	void ContinueCombo(bool IsComboInputBuffered);
 
+	void BeginParrying();
+
 	void OnComboEnded();
 
 	EMoveSet GetMoveSet() const;

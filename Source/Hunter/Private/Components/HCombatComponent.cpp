@@ -32,6 +32,15 @@ bool UHCombatComponent::TryAttack(EAttackIntent AttackIntent)
 	return true;
 }
 
+bool UHCombatComponent::TryParrying()
+{
+	if (!CanParrying()) { return false; }
+
+	CachedWeaponComponent->BeginParrying();
+
+	return true;
+}
+
 void UHCombatComponent::Notify_OnAttackWindowBegin()
 {
 	if (!CachedWeaponComponent) { return; }
@@ -70,6 +79,16 @@ void UHCombatComponent::Notify_OnComboEnded() const
 	OnComboEnded();
 }
 
+void UHCombatComponent::Notify_OnParryingWindowBegin() const
+{
+	CachedCharacter->OnParryingWindowBegin();
+}
+
+void UHCombatComponent::Notify_OnParryingWindowEnd() const
+{
+	CachedCharacter->OnParryingWindowEnd();
+}
+
 
 void UHCombatComponent::BeginPlay()
 {
@@ -101,6 +120,11 @@ void UHCombatComponent::OnComboEnded() const
 bool UHCombatComponent::CanAttack() const
 {
 	return IsOwnerAlive() && IsOwnerHasStamina() && CachedWeaponComponent && !CachedCharacter->HasInputRestriction(EActionRestriction::BlockAttack);
+}
+
+bool UHCombatComponent::CanParrying() const
+{
+	return IsOwnerAlive() && IsOwnerHasStamina() && CachedWeaponComponent;
 }
 
 bool UHCombatComponent::IsAttackInProgress() const

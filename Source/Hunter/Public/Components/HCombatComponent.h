@@ -23,6 +23,8 @@ public:
 	UHCombatComponent();
 	bool TryAttack(EAttackIntent AttackIntent);
 
+	bool TryParrying();
+
 	void Notify_OnAttackWindowBegin();
 	void Notify_OnAttackWindowEnd();
 
@@ -31,6 +33,9 @@ public:
 
 	void Notify_OnAttackEnded() const;
 	void Notify_OnComboEnded() const;
+
+	void Notify_OnParryingWindowBegin() const;
+	void Notify_OnParryingWindowEnd() const;
 
 	FOnAttackStart OnAttackStart;
 	FOnAttackInterrupted OnAttackInterrupted;
@@ -55,6 +60,8 @@ private:
 	void OnComboEnded() const;
 
 	bool CanAttack() const;
+	bool CanParrying() const;
+
 	bool IsAttackInProgress() const;
 
 	bool IsOwnerAlive() const;

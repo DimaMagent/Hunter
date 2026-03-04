@@ -54,6 +54,12 @@ void AHBaseWeapon::AttackDataHandle(EAttackIntent AttackIntent) {
 	
 }
 
+void AHBaseWeapon::ParryingDataHandle()
+{
+	CurrentDamage = 0.0f;
+	CurrentStaminaCost = BaseStaminaCost * ParryingStaminaCostModifier;
+}
+
 void AHBaseWeapon::SetCollsionMode(ECollisionResponse NewMode)
 {
 	CapsuleComponent->SetCollisionResponseToAllChannels(NewMode);

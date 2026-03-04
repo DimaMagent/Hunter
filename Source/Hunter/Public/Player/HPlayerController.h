@@ -32,6 +32,9 @@ struct FAdventureModeAction
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> RunAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> ParryingAction;
 };
 
 
@@ -55,6 +58,8 @@ protected:
 	void OnLookAround(const FInputActionInstance& Instance);
 
 	void OnAttack(const FInputActionInstance& Instance);
+
+	void OnParrying(const FInputActionInstance& Instance);
 
 	void OnAlternativeAttack(const FInputActionInstance& Instance);
 

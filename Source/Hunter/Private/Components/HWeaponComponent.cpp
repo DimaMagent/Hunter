@@ -6,6 +6,8 @@
 #include "HBaseCharacter.h"
 #include "Types/CombatTypes.h"
 
+DEFINE_LOG_CATEGORY_STATIC(WeaponComponentLog, All, All)
+
 UHWeaponComponent::UHWeaponComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -24,13 +26,11 @@ void UHWeaponComponent::BeginAttack(EAttackIntent CurrentAttackIntent) const
 
 	if (!CachedOwner) { return; }
 
-	CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost());
+	
 
 	bool bIsPlayAttackAnimSucceeded = CachedOwner->PlayAnim(AttackAnim);
 
-	if (!bIsPlayAttackAnimSucceeded) {
-		OnTryAttackInterrupt.Broadcast();
-	}
+	bIsPlayAttackAnimSucceeded ? CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost()):  OnTryAttackInterrupt.Broadcast();
 }
 
 void UHWeaponComponent::ContinueCombo(bool IsComboInputBuffered) {
@@ -46,6 +46,28 @@ void UHWeaponComponent::ContinueCombo(bool IsComboInputBuffered) {
 	CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost());
 
 	CachedOwner->PlayComboStep(CurrentStepName);
+}
+
+void UHWeaponComponent::BeginParrying()
+{
+	if (!CurrentWeapon) { return; }
+
+	CurrentWeapon->ParryingDataHandle();
+
+	UAnimMontage* ParryingAnim = CurrentWeapon->GetParryingMontage();
+	if (!ParryingAnim) { return; }
+
+	if (!CachedOwner) { return; }
+
+	bool bIsPlayParryingAnimSucceeded = CachedOwner->PlayAnim(ParryingAnim);
+
+	if (bIsPlayParryingAnimSucceeded) {
+		CachedOwner->ChangeStamina(-CurrentWeapon->GetCurrentStaminaCost());
+	}
+	else {
+		UE_LOG(WeaponComponentLog, Warning, TEXT("UHWeaponComponent::BeginParrying: Play ParryingAnim was failed"));
+	}
+
 }
 
 void UHWeaponComponent::OnComboEnded()

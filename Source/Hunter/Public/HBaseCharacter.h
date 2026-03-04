@@ -62,6 +62,7 @@ If you want to select multiple restriction, you should use  | operation*/
 	void Move(const FVector2D MoveAroundValue);
 	void LookAround(const FVector2D LookAxisValue);
 	bool Attack(EAttackIntent AttackIntent);
+	bool Parrying();
 	void RunStart();
 	void RunEnd();
 
@@ -74,6 +75,9 @@ If you want to select multiple restriction, you should use  | operation*/
 	bool IsAnyAnimMontageActive() const { return bIsAnimMontageActive; }
 	bool IsCharacterAlive() const;
 	bool IsCharacterHasStamina() const;
+
+	void OnParryingWindowBegin();
+	void OnParryingWindowEnd();
 
 	virtual UHWeaponComponent* GetWeaponComponent_Implementation() const override { return WeaponComponent; };
 
@@ -141,5 +145,7 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UHAnimInstanceBase> CachedAnimInstance;
+
+	bool bCanCharacterTakeDamage = true;
 
 };
