@@ -11,7 +11,10 @@ class UInputAction;
 class AHBaseCharacter;
 class UInputMappingContext;
 class UHGameUserWidget;
+class UHMainMenuWidget;
+class UUserWidget;
 struct FInputActionInstance;
+class UHMainMenuWidget;
 
 USTRUCT(BlueprintType)
 struct FAdventureModeAction
@@ -35,6 +38,9 @@ struct FAdventureModeAction
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> ParryingAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> GoToPauseMenuAction;
 };
 
 
@@ -61,14 +67,21 @@ protected:
 
 	void OnParrying(const FInputActionInstance& Instance);
 
+	void GoToPauseMenu(const FInputActionInstance& Instance);
+
 	void OnAlternativeAttack(const FInputActionInstance& Instance);
 
 	void OnRunStart(const FInputActionInstance& Instance);
 
 	void OnRunEnd(const FInputActionInstance& Instance);
 
+	void MainMenuLevelLoading();
+
 	UFUNCTION()
 	virtual void OnCharacterDead();
+
+	UFUNCTION()
+	void OnMenuEvent(EMainMenuEvent MenuEvent);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> AdventureModeMappingContext;
@@ -82,11 +95,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> DeadUserWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UHMainMenuWidget> MainMenuWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<UHGameUserWidget> GameplayUserWidget;
 
 	UPROPERTY()
 	TObjectPtr<UUserWidget> OnDeadUserWidget;
+
+	UPROPERTY()
+	TObjectPtr<UHMainMenuWidget> MainMenuWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Levels")
+	FName MainLevelName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Levels")
+	FName MainMenuLevelName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "View")
 	float ViewPitchMin = 315.0f;

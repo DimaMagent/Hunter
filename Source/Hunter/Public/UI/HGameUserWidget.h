@@ -21,6 +21,8 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+	virtual void NativeDestruct() override;
+
 	UPROPERTY(BlueprintReadOnly)
 	float CachedHealthPercent = 100.0f;
 

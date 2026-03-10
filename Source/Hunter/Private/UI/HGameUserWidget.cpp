@@ -18,7 +18,7 @@ void UHGameUserWidget::UpdateCurrentStaminaPercent(float NewHealthPercent)
 void UHGameUserWidget::InitWidgetPawnOwner(APawn* NewWidgetPawnOwner)
 {
 	if (!NewWidgetPawnOwner) {
-		UE_LOG(LogTemp, Error, TEXT("Method InitWidgetPawnOwner: NewWidgetPawnOwner is nullptr!"));
+		UE_LOG(LogTemp, Error, TEXT("UHGameUserWidget::InitWidgetPawnOwner: NewWidgetPawnOwner is nullptr!"));
 		return;
 	}
 	CachedWidgetPawnOwner = NewWidgetPawnOwner;
@@ -39,5 +39,18 @@ void UHGameUserWidget::NativeConstruct()
 			CachedStaminaComponent->OnStaminaChanged.AddDynamic(this, &UHGameUserWidget::UpdateCurrentStaminaPercent);
 			CachedStaminaComponent->OnStaminaRecoveryPenalty.AddDynamic(this, &UHGameUserWidget::OnStaminaRecoveryPenalty);
 		}
+	}
+}
+
+void UHGameUserWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	if (CachedHealthComponent) {
+		CachedHealthComponent->OnHealthChanged.RemoveAll(this);
+	}
+	if (CachedStaminaComponent) {
+		CachedStaminaComponent->OnStaminaChanged.RemoveAll(this);
+		CachedStaminaComponent->OnStaminaRecoveryPenalty.RemoveAll(this);
 	}
 }

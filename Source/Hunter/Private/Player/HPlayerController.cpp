@@ -8,6 +8,12 @@
 #include "Blueprint/UserWidget.h"
 #include "Types/CombatTypes.h"
 #include "UI/HGameUserWidget.h"
+#include "Subsystems/UHUIMessageSubsystem.h"
+#include "UI/HMainMenuWidget.h"
+#include "Kismet/GameplayStatics.h"
+
+
+
 
 DEFINE_LOG_CATEGORY_STATIC(ControllerLog, All, All)
 
@@ -24,6 +30,7 @@ void AHPlayerController::SetupInputComponent()
 		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Triggered, this, &AHPlayerController::OnRunStart);
 		EnhancedInput->BindAction(AdventureModeActions.RunAction, ETriggerEvent::Completed, this, &AHPlayerController::OnRunEnd);
 		EnhancedInput->BindAction(AdventureModeActions.ParryingAction, ETriggerEvent::Started, this, &AHPlayerController::OnParrying);
+		EnhancedInput->BindAction(AdventureModeActions.GoToPauseMenuAction, ETriggerEvent::Started, this, &AHPlayerController::GoToPauseMenu);
 	}
 }
 
@@ -36,18 +43,30 @@ void AHPlayerController::BeginPlay()
 	if (CachedCharacter) {
 		CachedCharacter->OnCharacterDead.AddDynamic(this, &AHPlayerController::OnCharacterDead);
 	}
-	
+
+
 	if (GameplayUserWidgetClass && CachedCharacter) {
 		GameplayUserWidget = CreateWidget<UHGameUserWidget>(this, GameplayUserWidgetClass);
 		GameplayUserWidget->InitWidgetPawnOwner(CachedCharacter);
-		GameplayUserWidget->AddToViewport();
 	}
 	if (DeadUserWidgetClass) {
 		OnDeadUserWidget = CreateWidget<UUserWidget>(this, DeadUserWidgetClass);
-		UE_LOG(ControllerLog, Error, TEXT("AHPlayerController::OnCharacterDead: OnDeadUserWidget must be Valid now"));
 	}
 	else {
 		UE_LOG(ControllerLog, Error, TEXT("AHPlayerController::BeginPlay: DeadUserWidgetClass is not Valid"));
+	}
+
+
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance) {
+		UUHUIMessageSubsystem* UIMessageSubsystem = GameInstance->GetSubsystem<UUHUIMessageSubsystem>();
+		if (UIMessageSubsystem) {
+			UIMessageSubsystem->OnMenuEvent.AddUniqueDynamic(this, &AHPlayerController::OnMenuEvent);
+		}
+	}
+	if (MainMenuWidgetClass) {
+		MainMenuWidget = CreateWidget<UHMainMenuWidget>(this, MainMenuWidgetClass);
+		UGameplayStatics::GetCurrentLevelName(this) == MainMenuLevelName ? MainMenuLevelLoading() : GameplayUserWidget->AddToViewport();
 	}
 }
 
@@ -95,6 +114,17 @@ void AHPlayerController::OnParrying(const FInputActionInstance& Instance)
 	}
 }
 
+void AHPlayerController::GoToPauseMenu(const FInputActionInstance& Instance)
+{
+	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
+	if (!bIsTriggered) { return; }
+	if (GameplayUserWidget) {
+		GameplayUserWidget->RemoveFromParent();
+	}
+	
+	UGameplayStatics::OpenLevel(GetWorld(), MainMenuLevelName);
+}
+
 void AHPlayerController::OnAlternativeAttack(const FInputActionInstance& Instance)
 {
 	bool bIsTriggered = Instance.GetTriggerEvent() == ETriggerEvent::Started;
@@ -122,14 +152,40 @@ void AHPlayerController::OnRunEnd(const FInputActionInstance& Instance)
 	CachedCharacter->RunEnd();
 }
 
+void AHPlayerController::MainMenuLevelLoading()
+{
+	if (MainMenuWidget) {
+		MainMenuWidget->AddToViewport();
+	}
+	bShowMouseCursor = true;
+	SetInputMode(FInputModeUIOnly());
+}
+
 void AHPlayerController::OnCharacterDead() {
 	if (!OnDeadUserWidget) { UE_LOG(ControllerLog, Error, TEXT("AHPlayerController::OnCharacterDead: OnDeadUserWidget is not Valid"));  return; }
 
 	if (GameplayUserWidget) {
-		GameplayUserWidget->RemoveFromViewport();
+		GameplayUserWidget->RemoveFromParent();
 	}
 
 	OnDeadUserWidget->AddToViewport();
+}
+
+void AHPlayerController::OnMenuEvent(EMainMenuEvent MenuEvent) {
+	switch (MenuEvent) {
+	case EMainMenuEvent::Start:
+		MainMenuWidget->RemoveFromParent();
+		bShowMouseCursor = false;
+		SetInputMode(FInputModeGameOnly());
+		GameplayUserWidget->AddToViewport();
+		UGameplayStatics::OpenLevel(GetWorld(), MainLevelName);
+		break;
+	case EMainMenuEvent::Exit:
+		ConsoleCommand("quit");
+		break;
+	default:
+		break;
+	}
 }
 
 bool AHPlayerController::ValidateInputActions() const
@@ -139,7 +195,8 @@ bool AHPlayerController::ValidateInputActions() const
 		ensureMsgf(AdventureModeActions.AttackAction, TEXT("AttackAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.AlternativeAttackAction, TEXT("AlternativeAttackAction is not set on %s"), *GetName()) &&
 		ensureMsgf(AdventureModeActions.RunAction, TEXT("RunAction is not set on %s"), *GetName()) &&
-		ensureMsgf(AdventureModeActions.ParryingAction, TEXT("ParryingAction is not set on %s"), *GetName());
+		ensureMsgf(AdventureModeActions.ParryingAction, TEXT("ParryingAction is not set on %s"), *GetName()) &&
+		ensureMsgf(AdventureModeActions.GoToPauseMenuAction, TEXT("GoToPauseMenuAction is not set on %s"), *GetName());
 	return bIsValidAdventureModeActions;
 }
 
